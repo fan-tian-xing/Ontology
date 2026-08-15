@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "本体的一些理解.md",
+                "file": "一个粗略步骤.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "本体的一些理解"
+              "title": "一个粗略步骤"
             }
           }
         ],
@@ -176,7 +176,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "本体的一些理解.md",
+                "file": "一个粗略步骤.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -208,7 +208,7 @@
   "active": "fed662c48f62a7a8",
   "lastOpenFiles": [
     "本体相关基础概念.md",
-    "本体的一些理解.md",
+    "一个粗略步骤.md",
     "欢迎.md"
   ]
 }
