@@ -17,7 +17,7 @@ if len(manifest) != 94:
 
 page_width_points = 595.275590551
 pdf = canvas.Canvas(str(output_path), pageCompression=1)
-pdf.setTitle("汽轮机本体安装及维护说明书（重建版）")
+pdf.setTitle("Turbine Body Installation and Maintenance Manual - Reconstructed")
 pdf.setAuthor("Reconstructed from saved Scribd page captures")
 pdf.setSubject("D300N-000105ASM")
 
