@@ -1,0 +1,942 @@
+[
+  {
+    "page": 1,
+    "filename": "page-001.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 24,
+    "imageCount": 11,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 5
+  },
+  {
+    "page": 2,
+    "filename": "page-002.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 15,
+    "imageCount": 6,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 7
+  },
+  {
+    "page": 3,
+    "filename": "page-003.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 429,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 4,
+    "filename": "page-004.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 162,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 5,
+    "filename": "page-005.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 251,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 6,
+    "filename": "page-006.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 313,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 7,
+    "filename": "page-007.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 461,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 8,
+    "filename": "page-008.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 742,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 9,
+    "filename": "page-009.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 116,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 10,
+    "filename": "page-010.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 784,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 11,
+    "filename": "page-011.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 706,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 12,
+    "filename": "page-012.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 76,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 13,
+    "filename": "page-013.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 602,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 14,
+    "filename": "page-014.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 700,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 15,
+    "filename": "page-015.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 744,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 16,
+    "filename": "page-016.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 56,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 17,
+    "filename": "page-017.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 659,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 18,
+    "filename": "page-018.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 490,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 19,
+    "filename": "page-019.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 727,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 20,
+    "filename": "page-020.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 508,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 21,
+    "filename": "page-021.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 54,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 22,
+    "filename": "page-022.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 45,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 23,
+    "filename": "page-023.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 806,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 24,
+    "filename": "page-024.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 493,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 25,
+    "filename": "page-025.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 188,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 26,
+    "filename": "page-026.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 64,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 27,
+    "filename": "page-027.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 44,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 28,
+    "filename": "page-028.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 714,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 29,
+    "filename": "page-029.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 609,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 30,
+    "filename": "page-030.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 468,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 31,
+    "filename": "page-031.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 349,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 32,
+    "filename": "page-032.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 591,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 33,
+    "filename": "page-033.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 36,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 34,
+    "filename": "page-034.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 742,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 35,
+    "filename": "page-035.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 71,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 36,
+    "filename": "page-036.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 639,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 37,
+    "filename": "page-037.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 660,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 38,
+    "filename": "page-038.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 75,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 39,
+    "filename": "page-039.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 87,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 40,
+    "filename": "page-040.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 187,
+    "imageCount": 4,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 41,
+    "filename": "page-041.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 627,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 42,
+    "filename": "page-042.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 715,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 43,
+    "filename": "page-043.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 485,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 44,
+    "filename": "page-044.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 736,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 45,
+    "filename": "page-045.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 136,
+    "imageCount": 1,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 46,
+    "filename": "page-046.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 773,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 47,
+    "filename": "page-047.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 516,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 48,
+    "filename": "page-048.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 564,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 49,
+    "filename": "page-049.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 655,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 50,
+    "filename": "page-050.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 648,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 51,
+    "filename": "page-051.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 663,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 52,
+    "filename": "page-052.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 605,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 53,
+    "filename": "page-053.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 262,
+    "imageCount": 5,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 54,
+    "filename": "page-054.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 115,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 55,
+    "filename": "page-055.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 669,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 56,
+    "filename": "page-056.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 57,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 57,
+    "filename": "page-057.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 666,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 58,
+    "filename": "page-058.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 551,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 59,
+    "filename": "page-059.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 540,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 60,
+    "filename": "page-060.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 670,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 61,
+    "filename": "page-061.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 761,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 62,
+    "filename": "page-062.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 162,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 63,
+    "filename": "page-063.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 55,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 64,
+    "filename": "page-064.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 726,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 65,
+    "filename": "page-065.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 815,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 66,
+    "filename": "page-066.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 449,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 67,
+    "filename": "page-067.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 181,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 68,
+    "filename": "page-068.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 795,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 69,
+    "filename": "page-069.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 388,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 70,
+    "filename": "page-070.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 566,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 71,
+    "filename": "page-071.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 566,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 72,
+    "filename": "page-072.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 225,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 73,
+    "filename": "page-073.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 250,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 74,
+    "filename": "page-074.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 625,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 75,
+    "filename": "page-075.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 45,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 76,
+    "filename": "page-076.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 611,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 3
+  },
+  {
+    "page": 77,
+    "filename": "page-077.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 200,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 78,
+    "filename": "page-078.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 562,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 2
+  },
+  {
+    "page": 79,
+    "filename": "page-079.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 685,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 80,
+    "filename": "page-080.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 687,
+    "imageCount": 3,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 81,
+    "filename": "page-081.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 630,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 82,
+    "filename": "page-082.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 144,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 83,
+    "filename": "page-083.png",
+    "width": 902,
+    "height": 1276,
+    "textLength": 94,
+    "imageCount": 4,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 84,
+    "filename": "page-084.png",
+    "width": 902,
+    "height": 1148,
+    "textLength": 32,
+    "imageCount": 1,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 85,
+    "filename": "page-085.png",
+    "width": 902,
+    "height": 1148,
+    "textLength": 70,
+    "imageCount": 12,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 1
+  },
+  {
+    "page": 86,
+    "filename": "page-086.png",
+    "width": 902,
+    "height": 1148,
+    "textLength": 62,
+    "imageCount": 1,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 87,
+    "filename": "page-087.png",
+    "width": 902,
+    "height": 1148,
+    "textLength": 117,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 88,
+    "filename": "page-088.png",
+    "width": 902,
+    "height": 1148,
+    "textLength": 82,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 89,
+    "filename": "page-089.png",
+    "width": 902,
+    "height": 1148,
+    "textLength": 104,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 90,
+    "filename": "page-090.png",
+    "width": 902,
+    "height": 1148,
+    "textLength": 166,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 91,
+    "filename": "page-091.png",
+    "width": 902,
+    "height": 1148,
+    "textLength": 473,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 92,
+    "filename": "page-092.png",
+    "width": 902,
+    "height": 1148,
+    "textLength": 230,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 93,
+    "filename": "page-093.png",
+    "width": 902,
+    "height": 1148,
+    "textLength": 33,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  },
+  {
+    "page": 94,
+    "filename": "page-094.png",
+    "width": 902,
+    "height": 1148,
+    "textLength": 33,
+    "imageCount": 2,
+    "failedImageCount": 0,
+    "hiddenDuplicates": 0
+  }
+]
