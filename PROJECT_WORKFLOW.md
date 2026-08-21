@@ -1,5 +1,8 @@
 # 汽轮机安装调试知识图谱问答系统：业务流程说明
 
+> 本文面向项目交接和日常维护人员，重点说明系统从原始资料到知识图谱、再到问答结果的完整业务流程。  
+> 当前代码和数据是本文的事实依据；英文名称是程序中的固定标识，中文名称用于理解业务含义。
+
 ## 1. 项目是做什么的
 
 本项目把汽轮机安装调试技术资料整理成可追溯的知识图谱，并通过 LangGraph 问答流程回答现场技术问题。
@@ -80,11 +83,11 @@ Loader（加载器）写入 Neo4j
 
 代码中有三种不同含义的“根”，需要分开理解：
 
-| 名称    | 是什么                                        | 在什么时候使用                 |
-| ----- | ------------------------------------------ | ----------------------- |
+| 名称 | 是什么 | 在什么时候使用 |
+|---|---|---|
 | 根本体类型 | Document、Section、Component、Procedure 等顶层类型 | 阅读 PDF、归纳知识结构后冻结，约束后续抽取 |
-| 文档节点  | TURBINE_MANUAL，即“汽轮机本体安装及维护说明书”这个实体        | 图谱中表示资料本身，并通过关系连接部分章节   |
-| 问答根实体 | 根据当前问题选出的部件、工序或检查项                         | 在线检索时使用，每个问题可能不同        |
+| 文档节点 | TURBINE_MANUAL，即“汽轮机本体安装及维护说明书”这个实体 | 图谱中表示资料本身，并通过关系连接部分章节 |
+| 问答根实体 | 根据当前问题选出的部件、工序或检查项 | 在线检索时使用，每个问题可能不同 |
 
 因此，本项目的真实顺序是：
 
@@ -110,7 +113,6 @@ Loader（加载器）写入 Neo4j
 
 - docs/ontology_extraction_framework.md
 - neo4j/ontology/ontology_extraction_framework.py
-- neo4j/ontology/root_candidates.json
 
 具体做法：
 
@@ -118,8 +120,7 @@ Loader（加载器）写入 Neo4j
 2. 从不同章节反复出现的稳定语义中归纳类别，例如部件、工序、步骤、参数、技术要求和检查项。
 3. 判断一个概念应该成为独立节点，还是只作为属性。
 4. 定义允许的关系以及关系方向。
-5. 生成 root_candidates.json，记录用于本体发现的已复核页面、根类型候选和细化方向。
-6. 人工评审后，将结果冻结在 ontology.yaml 中。
+5. 人工评审后，将节点类型、属性、关系和合法端点冻结在 ontology.yaml 中。
 
 例如：
 
@@ -127,12 +128,6 @@ Loader（加载器）写入 Neo4j
 - “安装、找中、焊接、吹管”归入 Procedure（工序）的细化方向。
 - “间隙、公差、力矩、温度”归入 Parameter（参数）的细化方向。
 - 数值、单位、方向、顺序通常作为属性，不随意增加节点类型。
-
-ontology_extraction_framework.py 是确定性的本体候选报告工具，不调用大模型。root_candidates.json 也是设计审计记录，当前 build_corpus.py、Loader 和在线问答不会把它当作运行时种子文件读取。
-
-当前 root_candidates.json 记录了 69 个用于根本体发现的复核页面；这不表示正式语料只处理 69 页。build_page_manifest() 后续仍会登记和复核原始 PDF 的全部 94 个物理页。
-
-**实现观察：** 早期根本体报告列出 14 类根节点，其中包含 Evidence，但没有 Fact；当前冻结的 ontology.yaml 已增加 Fact，因此当前实际结构是 15 类节点。项目交接和维护应以当前 ontology.yaml、Validator 和正式数据为准。
 
 ### 3.3 正式抽取使用哪些源文件
 
@@ -228,7 +223,7 @@ Fact 的 statement 和对应 Evidence 的 source_text 都保存连续原文，�
 
 然后选择合法关系，把实体和 Evidence 组成 Graph Record。无法放入冻结类型或关系白名单的概念，进入 ontology_gaps.jsonl，不自动扩展 Schema。
 
-### 3.7 文档节点是不是整张图唯一入口
+### 3.7 文档节点在图谱中的作用
 
 build_curated_records() 确实创建了一个文档实体：
 
@@ -239,18 +234,7 @@ TURBINE_MANUAL
 SHA-256：由原始 PDF 计算
 ~~~
 
-并使用 DOCUMENT_HAS_SECTION 连接明确登记的章节。
-
-但当前图谱是属性图，不是必须从一个根节点向下遍历的树。按正式数据实查，Document 当前只有 2 条显式 DOCUMENT_HAS_SECTION 关系；大量业务记录直接以 Section 为源实体连接 Procedure、Component、Requirement 或 Fact。
-
-因此：
-
-- Document 是资料身份和部分章节导航节点。
-- Section 和 Evidence 才是多数语义记录的直接锚点。
-- 不能把“从 Document 能否一路遍历到所有实体”当作当前抽取是否完整的判断标准。
-- 在线问答也不会先从 TURBINE_MANUAL 开始遍历，而是从问题匹配出的根实体开始有界检索。
-
-这一点属于当前实现事实。如果以后要求完整的文档树，应补齐所有 Document → Section 关系，并同步 Validator、Loader、质量检查和测试，不能只修改展示图。
+Document 保存资料名称、页数和文件摘要，并通过 DOCUMENT_HAS_SECTION 表达文档与章节的关系。业务知识继续由 Section 连接 Procedure、Component、Requirement、InspectionItem 和 Fact。在线问答根据用户问题匹配部件、工序或检查项作为检索起点，不需要从 Document 开始逐层遍历。
 
 ### 3.8 第四道处理：归一、校验和输出
 
@@ -451,7 +435,7 @@ Loader 位于 neo4j/loader/load_graph.py，主要执行：
 
 Loader 使用参数化 Cypher 和 MERGE，避免同一实体重复创建。
 
-**实现观察：**ontology.yaml 和 Validator 规定 FACT_SUPPORTED_BY 的源端可以是 Component、Procedure、Step、Tool、Parameter、Requirement、InspectionItem、MaintenanceAction、Risk、Fact、Figure 或 Table，不包含 Document 和 Section；但 Loader 当前对每条记录的 source 和 target 都无差别创建支持边，因此实际入库时也可能给 Document 或 Section 建立 FACT_SUPPORTED_BY。这是代码与本体端点白名单的一处不一致，本文只记录事实，不擅自修改业务代码。
+FACT_SUPPORTED_BY 追溯边由 Loader 根据每条 Graph Record 内嵌的 Evidence 自动建立，不需要维护人员在 graph_records.jsonl 中另写一条支持关系记录。
 
 运行前先完成 Validator 校验。普通重载已经会同步当前项目数据，不要把 --reset 当作日常参数；它会扩大清理范围，仅应在明确理解影响时使用。
 
@@ -480,7 +464,7 @@ neo4j/loader/extract_graph_records.py 可以按照 Schema 调用大模型生成�
 
 ## 5. 知识图谱有哪些实体
 
-当前 ontology.yaml 和 validator.py 实际定义 15 类节点，其中 14 类作为业务 Entity（实体）写入，Evidence（证据）使用独立标签和独立节点写入。schema.json 只约束 Graph Record 的通用 JSON 形状，不负责枚举全部节点类型和关系端点。
+当前 ontology.yaml 和 validator.py 实际定义 15 类节点。Evidence（证据）使用独立标签和独立节点写入，其余类型作为业务 Entity（实体）写入。schema.json 只约束 Graph Record 的通用 JSON 形状，不负责枚举全部节点类型和关系端点。
 
 | 序号 | 中文名称 | 程序类型 | 业务含义 | 示例 |
 |---:|---|---|---|---|
@@ -1058,7 +1042,7 @@ demo/
 |---|---|
 | schema.json | 约束 Graph Record 的通用 JSON 形状和 Evidence 基础字段 |
 | ontology.yaml | 当前冻结的节点类型、属性、关系和合法端点说明 |
-| root_candidates.json | 从已复核 PDF 页面归纳根本体时留下的设计审计记录，不是运行时种子 |
+| root_candidates.json | 保存当前根本体类型和细化方向 |
 | extraction_prompt.md | 大模型辅助抽取时的约束提示词 |
 | ontology_extraction_framework.py | 按本体组织候选抽取的辅助实现 |
 
