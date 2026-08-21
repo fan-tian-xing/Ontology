@@ -497,23 +497,23 @@ neo4j/loader/extract_graph_records.py 可以按照 Schema 调用大模型生成�
 
 ### 5.2 关键关系及中文含义
 
-| 程序关系名 | 中文含义 | 典型方向 |
-|---|---|---|
-| DOCUMENT_HAS_SECTION | 文档包含章节 | Document → Section |
-| SECTION_CONTAINS | 章节包含业务对象 | Section → Section / Component / Procedure / Requirement / InspectionItem / Fact / Figure / Table |
-| COMPONENT_PART_OF | 部件隶属于另一部件 | Component → Component |
-| PROCEDURE_APPLIES_TO | 工序适用于部件 | Procedure → Component |
-| PROCEDURE_HAS_STEP | 工序包含步骤 | Procedure → Step |
-| STEP_NEXT_STEP | 当前步骤的下一步骤 | Step → Step |
-| STEP_REQUIRES | 步骤需要工具、参数或要求 | Step → Tool / Parameter / Requirement |
-| COMPONENT_HAS_PARAMETER | 部件具有参数 | Component → Parameter |
-| REQUIREMENT_APPLIES_TO | 技术要求适用于对象 | Requirement → Component / Procedure / InspectionItem |
-| INSPECTION_INSPECTS | 检查项检查对象 | InspectionItem → Component / Procedure |
-| INSPECTION_REQUIRES | 检查项需要参数或要求 | InspectionItem → Parameter / Requirement |
-| MAINTENANCE_APPLIES_TO | 维护动作适用于对象 | MaintenanceAction → Component |
-| MAINTENANCE_ADDRESSES | 维护动作处理风险或要求 | MaintenanceAction → Risk / Requirement |
-| PROCEDURE_REFERENCES | 工序或章节引用图表 | Procedure / Section → Figure / Table |
-| FACT_SUPPORTED_BY | 业务实体由证据支持 | Component / Procedure / Step / Tool / Parameter / Requirement / InspectionItem / MaintenanceAction / Risk / Fact / Figure / Table → Evidence |
+| 程序关系名                   | 中文含义         | 典型方向                                                                                                                                         |
+| ----------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| DOCUMENT_HAS_SECTION    | 文档包含章节       | Document → Section                                                                                                                           |
+| SECTION_CONTAINS        | 章节包含业务对象     | Section → Section / Component / Procedure / Requirement / InspectionItem / Fact / Figure / Table                                             |
+| COMPONENT_PART_OF       | 部件隶属于另一部件    | Component → Component                                                                                                                        |
+| PROCEDURE_APPLIES_TO    | 工序适用于部件      | Procedure → Component                                                                                                                        |
+| PROCEDURE_HAS_STEP      | 工序包含步骤       | Procedure → Step                                                                                                                             |
+| STEP_NEXT_STEP          | 当前步骤的下一步骤    | Step → Step                                                                                                                                  |
+| STEP_REQUIRES           | 步骤需要工具、参数或要求 | Step → Tool / Parameter / Requirement                                                                                                        |
+| COMPONENT_HAS_PARAMETER | 部件具有参数       | Component → Parameter                                                                                                                        |
+| REQUIREMENT_APPLIES_TO  | 技术要求适用于对象    | Requirement → Component / Procedure / InspectionItem                                                                                         |
+| INSPECTION_INSPECTS     | 检查项检查对象      | InspectionItem → Component / Procedure                                                                                                       |
+| INSPECTION_REQUIRES     | 检查项需要参数或要求   | InspectionItem → Parameter / Requirement                                                                                                     |
+| MAINTENANCE_APPLIES_TO  | 维护动作适用于对象    | MaintenanceAction → Component                                                                                                                |
+| MAINTENANCE_ADDRESSES   | 维护动作处理风险或要求  | MaintenanceAction → Risk / Requirement                                                                                                       |
+| PROCEDURE_REFERENCES    | 工序或章节引用图表    | Procedure / Section → Figure / Table                                                                                                         |
+| FACT_SUPPORTED_BY       | 业务实体由证据支持    | Component / Procedure / Step / Tool / Parameter / Requirement / InspectionItem / MaintenanceAction / Risk / Fact / Figure / Table → Evidence |
 
 核心结构可以简化理解为：
 
