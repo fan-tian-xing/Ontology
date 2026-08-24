@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "未命名.md",
+                "file": "一个粗略步骤.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "未命名"
+              "title": "一个粗略步骤"
             }
           }
         ],
@@ -205,12 +205,12 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e406dcedb37208e8",
+  "active": "569003140d38e8e0",
   "lastOpenFiles": [
+    "未命名.md",
     "PROJECT_WORKFLOW.md",
     "一个粗略步骤.md",
     "本体相关基础概念.md",
-    "未命名.md",
     "tmp/pdfs/page92-original.jsonp",
     "output/playwright/final-qa/contact-sheet-4.jpg",
     "output/playwright/final-qa/contact-sheet-3.jpg",
