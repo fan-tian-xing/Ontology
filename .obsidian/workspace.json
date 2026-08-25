@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "项目代码文件功能说明.md",
+                "file": "未命名.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "项目代码文件功能说明"
+              "title": "未命名"
             }
           }
         ]
@@ -192,8 +192,8 @@
   },
   "active": "e406dcedb37208e8",
   "lastOpenFiles": [
-    "未命名.md",
     "项目代码文件功能说明.md",
+    "未命名.md",
     "本体相关基础概念.md",
     "一个粗略步骤.md",
     "PROJECT_WORKFLOW.md",
