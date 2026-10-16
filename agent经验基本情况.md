@@ -7,7 +7,7 @@ Experience（经验）：从历史信息中得到的、能够指导未来行动�
 2. 经验利用的时机
 3. 提升经验的效率（时间）
 
-CD RL+经验 GRPO GPQA
+CD RL+经验 GRPO GPQA CAD
 SCS RSR relevance PR quality
 
 经验利用是否需要训练
