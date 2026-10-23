@@ -27,7 +27,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "agent经验基本情况.md",
+                "file": "agent经验/agent经验基本情况.md",
                 "mode": "source",
                 "source": false
               },
@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "ADAMEM.md",
+                "file": "agent经验/AdaMEM.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ADAMEM"
+              "title": "AdaMEM"
             }
           }
         ],
@@ -221,8 +221,11 @@
   },
   "active": "c51cc3f9c05aedc2",
   "lastOpenFiles": [
-    "agent经验基本情况.md",
-    "ADAMEM.md",
+    "agent经验.md",
+    "agent经验",
+    "agent经验/agent经验基本情况.md",
+    "agent经验/AdaMEM.md",
+    "agent经验/ADAMEM.md",
     "本体/汇报内容.md",
     "本体/汽轮机安装调试知识图谱总体设计与查询路线.md",
     "agent经验",
@@ -250,7 +253,6 @@
     "output/pdf/汽轮机本体安装及维护说明书_重建版.pdf",
     "output/pdf",
     "output/playwright/document-pages/manifest.json",
-    "output/playwright/document-pages",
     "欢迎.md"
   ]
 }
