@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "agent经验/agent经验基本情况.md",
+                "file": "agent经验/AdaMEM_论文阅读笔记.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "agent经验基本情况"
+              "title": "AdaMEM_论文阅读笔记"
             }
           }
         ]
@@ -83,7 +83,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "6cc1c1005a4cd4dc",
@@ -192,9 +193,9 @@
   },
   "active": "cb6a8de37e43a0b7",
   "lastOpenFiles": [
+    "agent经验/agent经验基本情况.md",
     "agent经验/AdaMEM_论文阅读笔记.md",
     "本体/汽轮机安装调试知识图谱总体设计与查询路线.md",
-    "agent经验/agent经验基本情况.md",
     "agent经验/AdaMEM.md",
     "agent经验.md",
     "agent经验",
