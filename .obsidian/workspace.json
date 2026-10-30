@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "agent经验/AdaMEM_论文阅读笔记.md",
+                "file": "agent经验/Terminal-Bench_调研（2026.10.30）.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "AdaMEM_论文阅读笔记"
+              "title": "Terminal-Bench_调研（2026.10.30）"
             }
           }
         ]
@@ -192,8 +192,9 @@
   },
   "active": "ced7f99fbcf9c556",
   "lastOpenFiles": [
-    "agent经验/agent经验基本情况.md",
     "agent经验/AdaMEM_论文阅读笔记.md",
+    "agent经验/Terminal-Bench_调研（2026.10.30）.md",
+    "agent经验/agent经验基本情况.md",
     "本体/汽轮机安装调试知识图谱总体设计与查询路线.md",
     "agent经验/AdaMEM.md",
     "agent经验.md",
