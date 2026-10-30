@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "c1440110919b4438",
+        "id": "60d2143a6e6cc320",
         "type": "tabs",
         "children": [
           {
-            "id": "5957791fdbc8c91e",
+            "id": "0d748533a86c566c",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "agent经验/Terminal-Bench_调研（2026.10.30）.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "新标签页"
+              "title": "Terminal-Bench_调研（2026.10.30）"
             }
           }
         ]
@@ -186,8 +190,9 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "5957791fdbc8c91e",
+  "active": "0d748533a86c566c",
   "lastOpenFiles": [
+    "agent经验/Benchmark生成与经验评测.md",
     "agent经验/Terminal-Bench_调研（2026.10.30）.md",
     "agent经验/AdaMEM_论文阅读笔记.md",
     "agent经验/Terminal-Bench_调研与Agent经验利用适配分析_2026-10-30.md",
