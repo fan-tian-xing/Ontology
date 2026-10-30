@@ -7,18 +7,11 @@ Terminal-Bench 4.0 是一个以终端和容器环境为载体、由自动测试�
 
 ## 1. Terminal-Bench 是什么
 
-Terminal-Bench 由 Harbor 团队维护，项目由 Stanford、Harbor 和 Laude Institute 托管，任务由多位研究者和组织贡献。其目标是衡量 Agent 在多样、困难的终端任务中的工作能力。这里几个概念应分开：
-
-| 概念 | 在本项目中的含义 |
-|---|---|
-| Benchmark | Terminal-Bench：任务指令、初始文件与容器环境、资源配置及验证程序组成的固定评测集。 |
-| Agent | 接收指令并决定如何使用工具的软件系统，可以包含提示、循环、状态管理和策略。 |
-| LLM | Agent 可调用的语言模型，负责理解、规划、生成工具动作等；模型本身不等同于完整 Agent。 |
-| Harness | 运行 Agent、提供工具与环境、调度任务、保存轨迹并执行评测的框架。Terminal-Bench 4.0 以 Harbor 为官方 Harness。 |
+Terminal-Bench 目标是衡量 Agent 在多样、困难的终端任务中的工作能力。
 
 普通问答 benchmark 通常输入问题、生成文本答案，再与标准答案比较；Terminal-Bench 则把 Agent 放进隔离环境，要求它读取文件、运行命令、观察返回结果、根据错误继续修正，并通过环境状态满足 verifier。应用覆盖代码与软件工程、机器学习/数据处理、科学计算、运维、安全、设计与媒体等终端工作流。评测对象因此是**Agent 系统整体**；如要分析模型贡献，必须固定 Harness、工具和资源。
 
-官网排行榜的 Resolution Rate 是任务通过率（官网图示含 95% 置信区间）；Tokens 表示运行记录的 token 用量，Cost 表示记录或估算的模型/API成本。它们受模型、Agent、推理设置、重试和各自记录口径共同影响，不能把某个榜单分数单独解释为基础模型能力。([官网](https://www.tbench.ai/)、[Terminal-Bench 仓库](https://github.com/harbor-framework/terminal-bench)、[Harbor 仓库](https://github.com/harbor-framework/harbor))
+官网排行榜的 Resolution Rate 是任务通过率（图示含 95% 置信区间）；Tokens 表示运行记录的 token 用量，Cost 表示记录或估算的模型/API成本。它们受模型、Agent、推理设置、重试和各自记录口径共同影响，不能把某个榜单分数单独解释为基础模型能力。
 
 ## 2. 任务设计与验证机制
 
