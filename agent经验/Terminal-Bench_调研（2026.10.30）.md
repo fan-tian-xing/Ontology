@@ -1,6 +1,3 @@
-# Terminal-Bench 调研与 Agent 经验利用实验适配分析
-
-**调研日期：2026 年 10 月 30 日**
 
 ## 摘要
 
@@ -18,15 +15,16 @@ Terminal-Bench 旨在衡量 Agent 在多样且具有一定难度的终端任务�
 
 ## 2. 任务设计与验证机制
 
-Harbor 标准任务通常包含 `instruction.md`、`task.toml`、`environment/`（例如 Dockerfile）、`solution/`（参考解）和 `tests/`（验证脚本）。Agent 根据任务指令在配置的容器或沙箱中操作；任务可以包含多步操作、多个容器以及连续的环境反馈。任务结束后，verifier（自动验证程序）检查最终产物或环境状态，并生成数值 reward，常见结果为通过或失败。评测侧重任务结果，而不是要求 Agent 遵循某条指定的操作路径。任务配置可以设置 Agent 与 verifier 的超时，以及 CPU、内存、存储和 GPU 等资源。Harbor 支持运行单个任务，也支持通过筛选参数选择数据集中的任务。运行错误、超时、模型拒答、输出 token 超限和 verifier 未通过属于不同的失败类型，结果分析时宜分别记录。
+Harbor 标准任务通常包含 `instruction.md`、`task.toml`、`environment/`（例如 Dockerfile）、`solution/`（参考解）和 `tests/`（验证脚本）。Agent 根据任务指令在配置的容器或沙箱中操作；任务可以包含多步操作、多个容器以及连续的环境反馈。任务结束后，verifier（自动验证程序）检查最终产物或环境状态，并生成数值 reward，常见结果为通过或失败。
+评测侧重任务结果，而不是要求 Agent 遵循某条指定的操作路径。任务配置可以设置 Agent 与 verifier 的超时，以及 CPU、内存、存储和 GPU 等资源。Harbor 支持运行单个任务，也支持通过筛选参数选择数据集中的任务。运行错误、超时、模型拒答、输出 token 超限和 verifier 未通过属于不同的失败类型，结果分析时宜分别记录。
 
-**真实任务示例：`layout-config-recreation2`。** Hub 中的指令要求 Agent 检查 `/app/data/layout.png` 及 `/app/data/components/` 中的图像素材，识别画布元素、层级、位置、文字和样式，并生成 `/app/output/config.json`；使用提供的渲染程序生成的结果须与原图达到至少 98% 的像素一致。任务配置声明了输出 artifact，Agent 超时上限为 8 小时，环境与 verifier 分别配置 CPU 和内存，verifier 在独立环境中运行。完成该任务涉及图像观察、文件检查、配置生成、渲染和调试，最终由自动程序验证结果。([任务指令](https://hub.harborframework.com/tasks/terminal-bench/layout-config-recreation2/latest/files/instruction.md)、[任务配置](https://hub.harborframework.com/tasks/terminal-bench/layout-config-recreation2/latest/files/task.toml))
+**真实任务示例：`layout-config-recreation2`。** Hub 中的指令要求 Agent 检查 `/app/data/layout.png` 及 `/app/data/components/` 中的图像素材，识别画布元素、层级、位置、文字和样式，并生成 `/app/output/config.json`；使用提供的渲染程序生成的结果须与原图达到至少 98% 的像素一致。任务配置声明了输出 artifact，Agent 超时上限为 8 小时，环境与 verifier 分别配置 CPU 和内存，verifier 在独立环境中运行。完成该任务涉及图像观察、文件检查、配置生成、渲染和调试，最终由自动程序验证结果。
 
-Harbor 会保存 trial 的 Agent 输出、verifier 结果、运行配置和轨迹文件。Viewer 可按 trial 查看 reward、cost、耗时、轨迹及相关文本文件。若所用 Agent 输出 ATIF 轨迹，可检查其中序列化的消息、工具调用和工具结果；实际可见内容取决于对应 Agent 的记录能力，因此不应将轨迹查看能力等同于访问所有模型内部推理内容。([Harbor 任务格式](https://docs.harborframework.com/tasks/overview)、[结果查看](https://docs.harborframework.com/results/view-job-results)、[ATIF 轨迹格式](https://docs.harborframework.com/agents/atif))
+Harbor 会保存 trial 的 Agent 输出、verifier 结果、运行配置和轨迹文件。Viewer 可按 trial 查看 reward、cost、耗时、轨迹及相关文本文件。若所用 Agent 输出 ATIF 轨迹，可检查其中序列化的消息、工具调用和工具结果；实际可见内容取决于对应 Agent 的记录能力，因此不应将轨迹查看能力等同于访问所有模型内部推理内容。
 
 ## 3. Harbor 的作用、运行与产物
 
-Harbor 是 Agent 评测和优化框架，在本实验场景中承担 Harness 与调度层职责：加载任务或数据集、准备沙箱、启动预集成或自定义 Agent、运行 verifier、汇总 trial，并记录配置和轨迹。Terminal-Bench 是 benchmark 数据集；Harbor 是评测框架；具体 Agent 和底层 LLM 则是被评测系统的组成部分，三者职责不同。Harbor 当前文档列有 Claude Code、Codex、OpenHands、Gemini CLI、Qwen Coder、SWE-Agent、Terminus-2 等预集成 Agent；可用项会随 Harbor 版本及认证配置变化。
+Harbor 是 Agent 评测和优化框架，在本实验场景中承担 Harness 与调度层职责：加载任务或数据集、准备沙箱、启动预集成或自定义 Agent、运行 verifier、汇总 trial，并记录配置和轨迹。OpenHands、Gemini CLI、Qwen Coder、SWE-Agent、Terminus-2 等预集成 Agent；可用项会随 Harbor 版本及认证配置变化。
 
 Harbor 也支持自定义 Agent。若 Agent 命令行程序运行在任务环境中，可实现 `BaseInstalledAgent`；若 Agent 循环运行于 Harbor 进程外部，并通过 `BaseEnvironment` 操作沙箱，则可实现 `BaseAgent`。Harbor 通过 `module.path:ClassName` 等方式调用自定义实现。对于现有问答流程，适配重点是让 Agent 能在 Harbor 的执行框架中与终端环境交互，并按需接入经验机制；任务调度、沙箱和 verifier 等 Harness 能力由 Harbor 提供。([自定义 Agent 接口](https://docs.harborframework.com/agents/custom-agents))
 
@@ -65,22 +63,4 @@ Harbor 支持本地 Docker/Podman 和 Modal、Daytona 等远程沙箱。框架�
 | 三：适配一种经验方法 | 优先选择实现清楚且能够在同一 Agent 执行流程中接入经验的方法；固定模型和任务，通过 Harbor 的 Agent 接口或现有 Agent 扩展能力接入，并开展控制变量比较。 |
 | 四：扩大 baseline 对比 | 基础 Agent 与一种经验方法验证可行后，再逐项迁移其他 baseline，统一实验配置并开展正式评测和重复试验。 |
 
-## 6. 汇报结论与待确认事项
 
-1. **Terminal-Bench 是否适合当前研究？** 适合用于拓展经验利用在终端工具使用和多步反馈场景中的研究；其评测对象是 Agent 系统整体。
-2. **是否建议纳入新的实验 benchmark？** 建议先纳入小规模探索性实验，并固定 Terminal-Bench 4.0.0；基础 Agent 和运行环境验证后，再评估是否作为正式主 benchmark。
-3. **问答 baseline 迁移是否容易？** 不能直接沿用单轮问答流程，需要将 Agent 执行逻辑接入 Harbor 的终端任务运行方式，并逐一核实经验方法的实现与扩展接口。
-4. **主要技术难点是什么？** 在 Harbor 提供的共同 Harness 中接入可控的终端行动流程与经验读写机制，并控制模型、工具、资源和预算等变量，避免测试经验泄漏。
-5. **现阶段优先工作是什么？** 确认 Linux/GPU 沙箱条件与预算，固定 Harbor 和数据集版本，在少量任务上验证环境及基础 Agent，并保存轨迹供后续分析。
-6. **需要进一步确认哪些实验选择？** API 模型或本地模型、云端沙箱许可与预算、Terminal-Bench 的探索性或正式评测定位、优先适配的经验方法、经验构建与测试划分，以及重复次数和成本边界。
-
-## 参考资料
-
-- [Terminal-Bench 官网](https://www.tbench.ai/)
-- [Terminal-Bench 4.0 运行指南](https://www.tbench.ai/run)
-- [Terminal-Bench 4.0 版本说明](https://www.tbench.ai/news/terminal-bench-4-0)
-- [Terminal-Bench GitHub 仓库与版本发布](https://github.com/harbor-framework/terminal-bench)
-- [Harbor GitHub 仓库](https://github.com/harbor-framework/harbor)
-- [Harbor Hub：Terminal-Bench 4](https://hub.harborframework.com/datasets/terminal-bench/terminal-bench/4)
-- [Harbor 自定义 Agent](https://docs.harborframework.com/agents/custom-agents)、[任务格式](https://docs.harborframework.com/tasks/overview)、[运行作业](https://docs.harborframework.com/jobs/run-a-job)、[结果查看](https://docs.harborframework.com/results/view-job-results)
-- [真实任务：layout-config-recreation2](https://hub.harborframework.com/tasks/terminal-bench/layout-config-recreation2/latest/files/instruction.md)
