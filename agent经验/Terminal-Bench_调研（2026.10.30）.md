@@ -24,7 +24,9 @@ Harbor 会保存 trial 的 Agent 输出、verifier 结果、运行配置和轨�
 
 ## 3. Harbor 的作用、运行与产物
 
-Harbor 是 Agent 评测和优化框架，在本实验场景中承担 Harness 与调度层职责：加载任务或数据集、准备沙箱、启动预集成或自定义 Agent、运行 verifier、汇总 trial，并记录配置和轨迹。OpenHands、Gemini CLI、Qwen Coder、SWE-Agent、Terminus-2 等预集成 Agent；可用项会随 Harbor 版本及认证配置变化。
+Harbor 是 Agent 评测和优化框架，在本实验场景中承担 Harness 与调度层职责：加载任务或数据集、准备沙箱、启动预集成或自定义 Agent、运行 verifier、汇总 trial，并记录配置和轨迹。
+
+OpenHands、Gemini CLI、Qwen Coder、SWE-Agent、Terminus-2 等预集成 Agent；可用项会随 Harbor 版本及认证配置变化。
 
 Harbor 也支持自定义 Agent。若 Agent 命令行程序运行在任务环境中，可实现 `BaseInstalledAgent`；若 Agent 循环运行于 Harbor 进程外部，并通过 `BaseEnvironment` 操作沙箱，则可实现 `BaseAgent`。Harbor 通过 `module.path:ClassName` 等方式调用自定义实现。对于现有问答流程，适配重点是让 Agent 能在 Harbor 的执行框架中与终端环境交互，并按需接入经验机制；任务调度、沙箱和 verifier 等 Harness 能力由 Harbor 提供。([自定义 Agent 接口](https://docs.harborframework.com/agents/custom-agents))
 
@@ -40,15 +42,15 @@ harbor run -d terminal-bench/terminal-bench@4.0.0 \
 harbor view jobs
 ```
 
-其中，`-d` 选择并固定数据集版本，`-e modal` 指定运行沙箱，`-a` 指定 Agent，`-m` 指定模型，`-k 5` 表示每项任务进行 5 次尝试；`harbor view jobs` 用于查看本地结果。Terminal-Bench 4.0 运行指南指出数据集包含 GPU 任务，并建议使用具备 GPU 能力的沙箱；官方实验采用 Modal。Hub 数据集页展示了另一种长参数形式并推荐 Modal 或 Daytona。由于命令示例可能随文档或 CLI 版本更新，实际运行前应以所安装 Harbor 版本的 `harbor run --help`、锁定的数据集版本及对应运行指南为准。小规模验证可选择单个任务，并先设置较低并发数和尝试次数；筛选参数应按目标 CLI 版本确认。([4.0 运行指南](https://www.tbench.ai/run)、[Harbor 作业运行文档](https://docs.harborframework.com/jobs/run-a-job))
+其中，`-d` 选择并固定数据集版本，`-e modal` 指定运行沙箱，`-a` 指定 Agent，`-m` 指定模型，`-k 5` 表示每项任务进行 5 次尝试；`harbor view jobs` 用于查看本地结果。Terminal-Bench 4.0 运行指南指出数据集包含 GPU 任务，并建议使用具备 GPU 能力的沙箱；官方实验采用 Modal。Hub 数据集页展示了另一种长参数形式并推荐 Modal 或 Daytona。由于命令示例可能随文档或 CLI 版本更新，实际运行前应以所安装 Harbor 版本的 `harbor run --help`、锁定的数据集版本及对应运行指南为准。小规模验证可选择单个任务，并先设置较低并发数和尝试次数；筛选参数应按目标 CLI 版本确认。
 
-Harbor 支持本地 Docker/Podman 和 Modal、Daytona 等远程沙箱。框架支持某项能力，并不意味着每个任务都能在任意本地配置下运行。4.0 包含 GPU 与多容器任务，实验室 Linux GPU 服务器可作为候选环境，但应事先确认 Docker daemon 与容器权限、Compose 或多容器能力、GPU runtime 与驱动、镜像构建和文件挂载、网络策略及可用并发资源。Windows 本机环境的 GPU 和多容器支持情况也需单独核实。GPU 任务对沙箱执行环境提出要求，并不意味着 Agent 所用模型必须部署在本地 GPU 上。([Harbor 沙箱能力矩阵](https://docs.harborframework.com/sandboxes/pre-integrated-sandboxes))
+Harbor 支持本地 Docker/Podman 和 Modal、Daytona 等远程沙箱。框架支持某项能力，并不意味着每个任务都能在任意本地配置下运行。4.0 包含 GPU 与多容器任务，实验室 Linux GPU 服务器可作为候选环境，但应事先确认 Docker daemon 与容器权限、Compose 或多容器能力、GPU runtime 与驱动、镜像构建和文件挂载、网络策略及可用并发资源。Windows 本机环境的 GPU 和多容器支持情况也需单独核实。GPU 任务对沙箱执行环境提出要求，并不意味着 Agent 所用模型必须部署在本地 GPU 上。
 
 调用 API 模型需要相应供应商的凭据和网络连接；使用 Modal/Daytona 等远程沙箱也需配置对应账户。凭据应通过环境变量或 Harbor secret 机制注入。本地部署模型可减少逐 token 的供应商费用，但需要模型服务、显存和接口适配；API 方案减少模型运维工作，实际费用与速率限制则取决于模型和调用量。实验成本可按下式估算：`总费用 ≈ 各 trial 的输入/输出 token 费用之和 + 沙箱运行时长 × 资源单价 + 构建与存储费用`。建议先以少量任务记录 token 用量、运行时长和失败类型，再估算完整实验成本。8 小时是任务超时上限，不代表单个任务的预期运行时间。
 
 ## 4. 经验机制接入与信息隔离
 
-经验机制可以在任务开始时检索一次，也可以根据执行步数、失败信号或环境状态重新检索；还可以先从历史轨迹中提炼策略，再将其用于后续行动。这些属于可供实验比较的设计选项，不代表 ReasoningBank、AdaMem 或其他方法的现有实现已经采用了这些机制。Harbor 可以记录和查看运行轨迹，ATIF 提供结构化轨迹格式。经验库可保存经筛选的任务状态、动作、结果、失败原因和适用条件，以便评估其复用价值及上下文成本。([Harbor ATIF 轨迹格式](https://docs.harborframework.com/agents/atif)、[轨迹加载文档](https://docs.harborframework.com/jobs/loading-trajectories))
+经验机制可以在任务开始时检索一次，也可以根据执行步数、失败信号或环境状态重新检索；还可以先从历史轨迹中提炼策略，再将其用于后续行动。这些属于可供实验比较的设计选项，不代表 ReasoningBank、AdaMem 或其他方法的现有实现已经采用了这些机制。Harbor 可以记录和查看运行轨迹，ATIF 提供结构化轨迹格式。经验库可保存经筛选的任务状态、动作、结果、失败原因和适用条件，以便评估其复用价值及上下文成本。
 
 面向 GPQA/AIME 等问答任务形成的经验，主要是解题提示或文本结论，通常不包含 shell 命令、目录结构、进程反馈、依赖处理和错误恢复等信息。因此，迁移时需要评估这些经验与终端任务的匹配程度；终端经验可由经验构建任务上的 Agent 交互轨迹提取，轨迹中既可包括成功过程，也可记录失败与恢复经验。
 
