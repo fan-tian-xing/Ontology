@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "e06fdc8589569932",
+        "id": "fc1a7fd8676aad55",
         "type": "tabs",
         "children": [
           {
-            "id": "cb6a8de37e43a0b7",
+            "id": "ced7f99fbcf9c556",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -83,8 +83,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "6cc1c1005a4cd4dc",
@@ -191,7 +190,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "cb6a8de37e43a0b7",
+  "active": "ced7f99fbcf9c556",
   "lastOpenFiles": [
     "agent经验/agent经验基本情况.md",
     "agent经验/AdaMEM_论文阅读笔记.md",
