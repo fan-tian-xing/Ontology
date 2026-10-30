@@ -8,7 +8,7 @@ TRACE 研究的是如何从已有 Benchmark 的种子题出发，自动生成更
 
 ### 1.1 论文版本与主要贡献
 
-TRACE 发表于 ICLR 2026。会议论文题名为 *Towards Self-Evolving Agent Benchmarks: Validatable Agent Trajectory via Test-Time Exploration*。论文所列官方仓库目前为空。
+TRACE 发表于 ICLR 2026。论文名为 *Towards Self-Evolving Agent Benchmarks: Validatable Agent Trajectory via Test-Time Exploration*。论文所列官方仓库目前为空。
 
 TRACE 把任务演化分为三个角色：Evolution Proposer（演化提议器） 提出种子任务的改造方向；Exploration Executor （探索执行器）在工具环境中落实提议、探索解法并记录轨迹；Trajectory Validator （轨迹验证器）重放和审核轨迹。最终产物包括**新题、参考答案和对应轨迹**。
 
