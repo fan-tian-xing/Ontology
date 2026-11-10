@@ -51,19 +51,19 @@ ALFWorld 在线评测沿用现有 `evaluate_dagger` 适配器，以官方 `res_p
 
 从 `alfworld/data/json_2.1.1/train_2000` 读取每个任务的 `game.tw-pddl` 和其中的 `walkthrough`。这 2,000 个游戏都附有解题命令序列，是构库候选。
 
-每个游戏在 TextWorld 中回放一次。`reset` 得到任务描述和初始观察，逐条执行 `walkthrough` 的动作，记录「动作前的 Observation → Action → 动作后的 Observation」。只把达到 `won=True` 的轨迹纳入经验库。保存任务 ID、任务类型、任务描述、初始观察和按步排序的观察与动作。回放无需调用 Qwen，两种模型共用这批成功的原始轨迹。
+每个游戏在 TextWorld 中回放一次。`reset` 得到任务描述和初始观察，逐条执行 `walkthrough` 的动作，记录「动作前的 Observation → Action → 动作后的 Observation」。只把达到 `won=True` 的轨迹纳入经验库。保存任务 ID、任务类型、任务描述、初始观察和按步排序的观察与动作。回放无需调用 Qwen，两种模型共用这批成功的原始轨迹。（每个模型下面都需要单独一个文件夹保存）
 
 ### 5.2 为专家步骤生成 Thought
 
-从成功轨迹中挑少量步骤，手写 Thought 作为 few-shot 示例。对每个专家步骤，把任务描述、此前已执行的历史、该步动作前的观察及专家动作交给 Qwen，生成与该动作一致的 **Pseudo-Golden Thought**，并按轨迹 ID 和步号保存。Qwen3.5-27B 和 Qwen3.5-9B 分别生成 Thought、建立各自的经验库。
+从成功轨迹中挑少量步骤，手写 Thought 作为 few-shot 示例。对每个专家步骤，把任务描述、此前已执行的历史、该步动作前的观察及专家动作交给 Qwen，生成与该动作一致的 **Pseudo-Golden Thought**，并按轨迹 ID 和步号保存。Qwen3.5-27B 和 Qwen3.5-9B 分别生成 Thought、建立各自的经验库。（每个文件夹单独保存自己的经验库）
 
 使用官方 ALFWorld 的 `sentence-transformers/all-MiniLM-L6-v2` 建立两个余弦检索索引。轨迹索引用「初始观察 + 任务描述」，步骤索引只用该步 Thought。
 
 ### 5.3 评测时检索与使用经验
 
 1. **每局开始检索一次轨迹，Top-K = 2。** 用当前任务的初始观察和任务描述，从同任务类型的训练经验库检索两条完整专家轨迹，作为本局生成 Thought 的示例。
-2. **每步生成当前 Thought，使用本局完整的已执行历史。** 输入两条专家轨迹、当前任务、当前观察，以及本局之前每步的 Observation、Thought 和 Action。首步无历史，第 50 步最多可见前 49 步。
-3. **用当前 Thought 检索专家步骤，Top-K = 2。** 只对当前 Thought 编码，在同任务类型的步骤索引里按余弦相似度选两个命中，每条专家轨迹最多命中一步。
-4. **扩展片段并生成 Action。** 取 **B = 1、F = 2**，也就是命中步之前 1 步、之后 2 步。每条专家示例最多 4 步，按 `[Step -1]`、`[Step 0]`、`[Step 1]`、`[Step 2]` 标记，轨迹边界处只取已有步骤。Action 提示包含两个专家片段、当前任务、当前观察、当前 Thought、可选动作，以及本局最近 **B + F = 3** 个已执行步骤，历史不足时全部保留。按项目的 `<action>…</action>` 规则解析并执行，然后进入下一步。
+2. **第一次 LLM 调用生成当前 Thought，使用本局完整的已执行历史。** 输入两条专家轨迹、当前任务、当前观察，以及本局之前每步的 Observation、Thought 和 Action。首步无历史，第 50 步最多可见前 49 步。
+3. **用当前 Thought 检索专家步骤，Top-K = 2。** 只对当前 Thought 编码，在同任务类型的整个步骤索引里按余弦相似度选两个命中，每条专家轨迹最多命中一步。候选范围覆盖该类型的全部训练轨迹。选出的两个命中按各自的轨迹步号升序排列，两个扩展片段都用于生成 Action。
+4. **扩展片段，第二次 LLM 调用生成 Action。** 取 **B = 1、F = 2**，也就是命中步之前 1 步、之后 2 步。每条专家示例最多 4 步，按 `[Step -1]`、`[Step 0]`、`[Step 1]`、`[Step 2]` 标记，轨迹边界处只取已有步骤。Action 提示包含两个专家片段、当前任务、当前观察、当前 Thought、可选动作，以及本局最近 **B + F = 3** 个已执行步骤，历史不足时全部保留。按项目的 `<action>…</action>` 规则解析并执行，然后进入下一步。
 
 两阶段的模型配置、动作回退、50 步上限和评分沿用第 2 节。两个示例、Thought 检索和历史对齐依据论文，具体的 B/F 与两个阶段的历史范围按官方 ALFWorld 复现实验实现。 [论文第 3 节、第 4.1 节](https://doi.org/10.1145/3626772.3657788) · [官方 ALFWorld README](https://github.com/SkyRiver-2000/TRAD-Official/tree/main/ALFWorld#readme) · [运行代码](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/run_trad.py) · [检索代码](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/thought_retrieval.py)
