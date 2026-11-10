@@ -41,27 +41,25 @@ ALFWorld 在线评测沿用现有 `evaluate_dagger` 适配器，以官方 `res_p
 ## 4. 实施顺序与验收
 
 1. **先做训练专家轨迹。** 专家轨迹采用成功的轨迹。首选回放 `train_2000` 中游戏自带的 `walkthrough`，从真实纯文字环境记录初始观察和每步动作前后的观察，只有最终 `won=True` 的轨迹进入经验库。本地样本已确认含 `walkthrough` 字段，尚未验证 2000 条的回放成功率。先小样本核对动作命名、可选动作和终局，再汇总各任务类型的成功、失败和缺失数。离线回放与在线 agent 分离。
-2. **补齐 Thought 并建库。** 从训练成功轨迹中挑少量步骤人工写 Thought 示例。对其余专家步骤，向标注模型提供任务、已执行的前缀、当前观察和该步专家动作，生成与该动作相符的简洁 Thought。标注阶段只给该步决策时能观察到的状态和专家动作。主对比可用固定的 Qwen3.5-27B 作为离线标注器，让两个决策模型共享同一经验库。这是本项目的构库选择，记录标注器、提示版本和经验库版本。
+2. **补齐 Thought 并建库。** 从训练成功轨迹中挑少量步骤人工写 Thought 示例。对其余专家步骤，向标注模型提供任务、已执行的前缀、当前观察和该步专家动作，生成与该动作相符的简洁 Thought。标注阶段只给该步决策时能观察到的状态和专家动作。每个模型都需要单独建库。
 3. **验证一步，再验证一局。** 检查两个命中是否来自不同训练轨迹、Step 0 是否对应检索命中、片段在开头与结尾能否正确裁剪，以及当前任务动作是否来自最终 Action 响应。用少量 seen/unseen 任务确认每个实际环境步只执行一次动作，并能追踪两次生成、检索命中和官方得分。参数检查用训练任务或训练留出集。seen/unseen 小样本仅检查接线。
-4. **冻结后正式评测。** 运行两个模型各自的 seen/unseen，每组 3 次。按模型和 split 记录各次成功数/总数、三次平均成功率、相对 No-Exp 的百分点差和输入/输出 token。先完成 ALFWorld 主对比，再决定是否扩展 WebShop。论文的 96.77% 用作历史参照。
-
-单步日志至少保留当前任务 ID、步号、两阶段请求与 token、Thought 文本、每个命中的轨迹 ID/步号/余弦分数、扩展范围、解析状态、提交动作和环境结果。结果汇总记录实际训练库规模、各任务类型覆盖及每轮完整性。
+4. **冻结后正式评测。** 运行两个模型各自的 seen/unseen，每组 3 次。按模型和 split 记录各次成功数/总数、三次平均成功率、相对 No-Exp 的百分点差和输入/输出 token。先完成 ALFWorld 。
 
 ## 5. TRAD 方法细节与固定参数
 
 以下保留论文第 3 节的方法。论文未逐项给出 ALFWorld 的运行细节时，采用官方 ALFWorld 实现和 README 的复现实验设置。
 
-| 设置 | ALFWorld 主实验采用 | 依据 |
-| --- | --- | --- |
-| Thought Preparation | 少量人工标注作为 few-shot，利用专家动作生成逐步 Pseudo-Golden Thought | 论文第 3.1 |
-| 轨迹级示例数 | 2。以「初始 Observation + 任务」做密集检索，同任务类型中取最相似的两条轨迹，展示时短轨迹在前 | 论文第 4.1，官方 `run_trad.py`、`thought_retrieval.py` |
-| Thought 生成历史 | 完整的当前 episode 历史，含已执行步骤的 Observation、Thought、Action；加当前 Observation | 官方 `make_prompt_thought`。项目的 50 步上限覆盖整局 |
-| 步骤级 K | 2。按余弦分数从高到低选取，每条轨迹至多命中一步；展示时按命中步索引升序 | 论文第 3.2，官方 `thought_retrieval.py` |
-| Embedding | `sentence-transformers/all-MiniLM-L6-v2`。两级检索各自使用相同编码器和文本字段规则构建 query/key，向量 L2 归一化后用点积计算余弦相似度 | 官方 `thought_retrieval.py`、`build_thought_embedding.py` |
-| Temporal Expansion | **B=1，F=2**。B 指命中步之前，F 指命中步之后。每条示例最多 4 个动作步骤，边界处自然裁剪，可保留片段最后一个动作之后的 Observation | 论文第 3.3，官方 ALFWorld README 与 `make_prompt` |
-| Relative Order Mark | 开启。官方字面形式为 `[Step -1]`、`[Step 0]`、`[Step 1]`、`[Step 2]` | 论文第 3.3，官方 `--with_mark` |
-| History Alignment | 开启。Action 输入最近 **B+F=3** 个已执行步骤，保留任务、当前 Observation 和当前 Thought；步数不足时使用已有历史 | 论文第 3.3，官方 `--with_prev` 和 `make_prompt` |
-| 运行频率 | 每局 1 次轨迹检索；每个环境步 1 次 Thought 生成、1 次 Thought Embedding 检索、1 次 Action 生成，再执行 1 次环境动作 | 官方 `alfworld_run` |
+| 设置                  | ALFWorld 主实验采用                                                                                 |
+| ------------------- | ---------------------------------------------------------------------------------------------- |
+| Thought Preparation | 少量人工标注作为 few-shot，利用专家动作生成逐步 Pseudo-Golden Thought                                             |
+| 轨迹级示例数              | 2。以「初始 Observation + 任务」做密集检索，同任务类型中取最相似的两条轨迹，展示时短轨迹在前                                         |
+| Thought 生成历史        | 完整的当前 episode 历史，含已执行步骤的 Observation、Thought、Action；加当前 Observation                            |
+| 步骤级 K               | 2。按余弦分数从高到低选取，每条轨迹至多命中一步；展示时按命中步索引升序                                                           |
+| Embedding           | `sentence-transformers/all-MiniLM-L6-v2`。两级检索各自使用相同编码器和文本字段规则构建 query/key，向量 L2 归一化后用点积计算余弦相似度 |
+| Temporal Expansion  | **B=1，F=2**。B 指命中步之前，F 指命中步之后。每条示例最多 4 个动作步骤，边界处自然裁剪，可保留片段最后一个动作之后的 Observation                |
+| Relative Order Mark | 开启。官方字面形式为 `[Step -1]`、`[Step 0]`、`[Step 1]`、`[Step 2]`                                        |
+| History Alignment   | 开启。Action 输入最近 **B+F=3** 个已执行步骤，保留任务、当前 Observation 和当前 Thought；步数不足时使用已有历史                    |
+| 运行频率                | 每局 1 次轨迹检索；每个环境步 1 次 Thought 生成、1 次 Thought Embedding 检索、1 次 Action 生成，再执行 1 次环境动作             |
 
 `K=2、B=1、F=2` 是主实验的固定参数。官方脚本单独运行时的默认值是 `B=0、F=1`，标记和历史对齐默认关闭；复现实验使用 README 显式给出的扩展与开关。论文图 2 的 `B=F=1` 是示意配置。官方 `traj.zip` 提供预处理后的专家轨迹供原实验使用，本项目主表改用指定的 `train_2000` 构库。每条经验需要稳定的 `trajectory_id`、`task_type`、`task_description`、`initial_observation`、带 `step_idx` 的 `observation/thought/action`，以及独立保存的终局观察；只有可决策步骤进入 Thought 索引。按任务类型预检至少有两条独立成功轨迹，索引行固定映射到轨迹和步号。
 
@@ -78,5 +76,3 @@ for 每个未终止的环境步:
 ```
 
 项目适配层使用正文约定的模型、split、生成预算、可选动作提示、标签解析与官方环境评分。官方 GPT-4 脚本中的 300-token 限制、按换行停止、针对 GPT 输出的 `in/on` 字符替换和循环动作早停属于原运行外壳。项目实验沿用现有基线的动作与终止口径，检索前沿用官方对 Thought 中带空格的 ` in `、` on ` 统一为 ` in/on ` 的文本处理，并将处理后的 Thought 用于 Action 提示。
-
-参考来源见[官方 ALFWorld README](https://github.com/SkyRiver-2000/TRAD-Official/tree/main/ALFWorld#readme) · [官方检索实现](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/thought_retrieval.py) · [官方 Thought 向量构建](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/build_thought_embedding.py) · [官方运行脚本](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/run_trad.py) · [AdaMEM 参考仓库](https://github.com/yunx-z/AdaMEM)
