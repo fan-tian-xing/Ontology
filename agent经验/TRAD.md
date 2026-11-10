@@ -1,21 +1,21 @@
-# TRAD 在 ALFWorld 的方法复现
 
-目标是在现有长程纯文字 benchmark 框架中加入 TRAD，分别测量 Qwen3.5-27B 和 Qwen3.5-9B 在 ALFWorld seen、unseen 上的任务成功率和 token 开销，并与同设置下的 No-Exp、Self-Refine 比较。正文约定项目实验口径，末尾列出沿用的 TRAD 方法细节和参数。
+## 1. TRAD 方法
 
-## 1. 论文笔记核对
+1. **离线准备专家经验。** 从少量专家步骤开始，人工编写 Thought 作为 few-shot 示例。标注模型根据任务、已执行历史、当前观察和该步专家动作生成 Pseudo-Golden Thought。经验库保留完整轨迹，并给每个可决策步骤的 Thought 建立向量索引。专家动作只在离线标注与历史示例中可见。
+2. **每局检索一次完整轨迹。** 官方 ALFWorld 实现在 reset 后，用「初始观察 + 任务描述」检索同任务类型的专家轨迹。命中的完整轨迹作为本局 Thought 生成的示例。每次生成 Thought 时，再加入当前观察及本局已执行的历史。
+3. **每步检索相关经验。** 单独编码当前 Thought，与同任务类型的历史 Thought 计算余弦相似度，从高到低选出来自不同轨迹的 Top-K 步骤。检索结果保留轨迹 ID 和步索引，供后续按原轨迹取相邻步骤。
+4. **对齐经验并生成动作。** Temporal Expansion（TE）从每个命中步向前取 B 步、向后取 F 步，遇到边界时裁剪。Relative Order Mark（ROM）以命中步为 Step 0，标记其余步骤的相对位置。History Alignment（HA）在 Action 提示中加入当前任务最近 B+F 个已执行步骤。官方 ALFWorld 实现还把当前观察和当前 Thought 交给模型生成 Action，执行后进入下一轮。正常情况下，每个环境步需要两次生成请求。
 
-原总结对主流程的理解是正确的。TRAD 离线用专家动作标注 Pseudo-Golden Thought，在线先生成当前 Thought，再以 Thought 为键做步骤级检索，最后用带时间信息的专家片段辅助动作决策。决策 LLM 通过上下文示例使用经验，无需微调。以下几点会直接影响实现。
+两级检索承担不同职责。轨迹级示例帮助模型理解当前进度并生成 Thought，步骤级示例帮助模型选择当前动作。当前 Thought 由模型在线生成，可能判断错误。扩展后的专家片段提供动作的前提和后续结果，帮助模型结合当前观察作出决策。详细参数列在文末。[论文 §3.1–3.3](https://openreview.net/pdf/91133b4e8ef389a01a6bb5719c9154639f083ef3.pdf#page=4) · [官方运行脚本](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/run_trad.py) · [官方检索实现](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/thought_retrieval.py)
 
-| 核对项 | 复现时的口径 |
-| --- | --- |
-| 轨迹级检索 | 官方 ALFWorld 实现在 reset 后检索一次，查询包含初始 Observation 和任务指令，返回的完整专家轨迹用于每一步的 Thought 生成。 |
-| 步骤级检索 | 每步将当前 Thought 单独编码，按与历史 Thought 的余弦相似度选 Top-K，命中来自不同轨迹。官方 ALFWorld 的两级检索都在同任务类型的经验子库内进行。 |
-| 动作输入 | 论文框架允许最终决策携带当前 Thought，官方 ALFWorld 实际携带。扩展片段可包含命中后发生的**专家**动作和观察，在线任务只能使用当前观察与已执行的历史。 |
-| 历史对齐 | 最近 B+F 步用于 Action 阶段。Thought 阶段的官方实现使用当前 episode 的完整已有历史，两阶段的窗口不同。 |
-| 消融范围 | 论文第 4.4 节的 TE、ROM、HA 和 B/F 消融来自 Mind2Web，向后续步骤扩展更有利的观察也来自该实验。 |
-| 论文结果 | ALFWorld 的 96.77% 是 GPT-4、两个上下文示例、134 个 OOD 任务上的三次平均。Synapse 为 89.55%，Synapse + ReAct 为 93.78%。Mind2Web 的 GPT-3.5-turbo 总体任务成功率为 2.1%，Synapse 为 1.6%。WebShop 在本项目的 benchmark 范围内，论文未在 WebShop 报告 TRAD 成绩。 |
+### 论文结果与复现范围
 
-依据见论文第 3.1–3.3 节、图 2、4.1–4.4 节、表 1–3，以及官方 ALFWorld 运行代码。[SIGIR 2024 论文](https://doi.org/10.1145/3626772.3657788) · [可读论文](https://openreview.net/pdf/91133b4e8ef389a01a6bb5719c9154639f083ef3.pdf) · [官方运行脚本](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/run_trad.py)
+| 基准 | 论文设置 | 任务成功率 |
+| --- | --- | --- |
+| ALFWorld | GPT-4，2 个上下文示例，134 个 OOD 任务，三次平均 | TRAD **96.77%**，Synapse 89.55%，Synapse + ReAct 93.78% |
+| Mind2Web | GPT-3.5-turbo，3 个上下文示例，汇总三个测试子集 | TRAD **2.1%**，Synapse 1.6% |
+
+TE、ROM、HA 和 B/F 的消融来自 Mind2Web。TE 在三个子集上均有帮助，ROM 和 HA 的效果随子集变化，扩展到较远的步骤也可能引入噪声。本项目以 ALFWorld 为 TRAD 的复现目标，在统一的 Qwen 设置下与 No-Exp、Self-Refine 比较。WebShop 的 TRAD 实验属于后续方法迁移。 [论文 §4.1–4.4、表 1–3](https://openreview.net/pdf/91133b4e8ef389a01a6bb5719c9154639f083ef3.pdf#page=5)
 
 ## 2. 项目统一实验设置
 
@@ -39,11 +39,11 @@ ALFWorld 在线评测沿用现有 `evaluate_dagger` 适配器，以官方 `res_p
 - WebShop 的经验池、评测清单分别使用 `WebShop/baseline_models/data/human_goals_train_2000_split.json` 和 `WebShop/baseline_models/data/human_goals_test_split.json`，商品等数据来自 `WebShop/data`。当前 TRAD 实现目标是 ALFWorld。若后续用于 WebShop，结果单列为方法迁移。
 - 两个下载仓库与数据目录按只读输入处理。轨迹、Thought、索引和运行日志写入实验输出目录。评测时只暴露任务、在线观察、动作历史和当前可选动作，walkthrough、专家计划、环境事实及评分字段仅在各自的离线构库或计分环节使用。经验库在评测前冻结，seen/unseen 的交互结果都不写回。
 
-## 3. 现有 baseline 代码评估与接入
+## 3. 现有 baseline 与 TRAD 接入
 
 以下位置均相对于 `ysc_long_horizon_experience_learning/qwen3.5-27b`。
 
-| 现有实现 | 核对结果与接入方式 |
+| 现有实现 | 行为与接入方式 |
 | --- | --- |
 | `no_exp/alfworld` | 提示词与给定 ReAct 版本一致，单轮运行，使用真实文字环境和官方评分。`history_window=50` 可覆盖本轮已执行的历史。TRAD 可复用其任务发现、环境和评分适配、模型客户端、标签解析、后缀回退、运行日志与三次汇总。 |
 | `self_refine/alfworld` | 第一轮提示词与 No-Exp 一致。第一轮正常完成后始终从同一任务重新 reset，即使第一轮成功也跑第二轮。第二轮使用第一轮实际动作和对应观察，逐步反思并重新行动。传入轨迹不包含奖励、成功标志或原始模型输出，最终以第二轮评分。符合两轮设定。 |
