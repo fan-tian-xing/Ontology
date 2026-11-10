@@ -45,34 +45,25 @@ ALFWorld 在线评测沿用现有 `evaluate_dagger` 适配器，以官方 `res_p
 3. **验证一步，再验证一局。** 检查两个命中是否来自不同训练轨迹、Step 0 是否对应检索命中、片段在开头与结尾能否正确裁剪，以及当前任务动作是否来自最终 Action 响应。用少量 seen/unseen 任务确认每个实际环境步只执行一次动作，并能追踪两次生成、检索命中和官方得分。参数检查用训练任务或训练留出集。seen/unseen 小样本仅检查接线。
 4. **冻结后正式评测。** 运行两个模型各自的 seen/unseen，每组 3 次。按模型和 split 记录各次成功数/总数、三次平均成功率、相对 No-Exp 的百分点差和输入/输出 token。先完成 ALFWorld 。
 
-## 5. TRAD 方法细节与固定参数
+## 5. ALFWorld 的 TRAD 构库与使用流程
 
-以下保留论文第 3 节的方法。论文未逐项给出 ALFWorld 的运行细节时，采用官方 ALFWorld 实现和 README 的复现实验设置。
+### 5.1 抽取专家轨迹
 
-| 设置                  | ALFWorld 主实验采用                                                                                 |
-| ------------------- | ---------------------------------------------------------------------------------------------- |
-| Thought Preparation | 少量人工标注作为 few-shot，利用专家动作生成逐步 Pseudo-Golden Thought                                             |
-| 轨迹级示例数              | 2。以「初始 Observation + 任务」做密集检索，同任务类型中取最相似的两条轨迹，展示时短轨迹在前                                         |
-| Thought 生成历史        | 完整的当前 episode 历史，含已执行步骤的 Observation、Thought、Action；加当前 Observation                            |
-| 步骤级 K               | 2。按余弦分数从高到低选取，每条轨迹至多命中一步；展示时按命中步索引升序                                                           |
-| Embedding           | `sentence-transformers/all-MiniLM-L6-v2`。两级检索各自使用相同编码器和文本字段规则构建 query/key，向量 L2 归一化后用点积计算余弦相似度 |
-| Temporal Expansion  | **B=1，F=2**。B 指命中步之前，F 指命中步之后。每条示例最多 4 个动作步骤，边界处自然裁剪，可保留片段最后一个动作之后的 Observation                |
-| Relative Order Mark | 开启。官方字面形式为 `[Step -1]`、`[Step 0]`、`[Step 1]`、`[Step 2]`                                        |
-| History Alignment   | 开启。Action 输入最近 **B+F=3** 个已执行步骤，保留任务、当前 Observation 和当前 Thought；步数不足时使用已有历史                    |
-| 运行频率                | 每局 1 次轨迹检索；每个环境步 1 次 Thought 生成、1 次 Thought Embedding 检索、1 次 Action 生成，再执行 1 次环境动作             |
+从 `alfworld/data/json_2.1.1/train_2000` 读取每个任务的 `game.tw-pddl` 和其中的 `walkthrough`。这 2,000 个游戏都附有解题命令序列，是构库候选。
 
-`K=2、B=1、F=2` 是主实验的固定参数。官方脚本单独运行时的默认值是 `B=0、F=1`，标记和历史对齐默认关闭；复现实验使用 README 显式给出的扩展与开关。论文图 2 的 `B=F=1` 是示意配置。官方 `traj.zip` 提供预处理后的专家轨迹供原实验使用，本项目主表改用指定的 `train_2000` 构库。每条经验需要稳定的 `trajectory_id`、`task_type`、`task_description`、`initial_observation`、带 `step_idx` 的 `observation/thought/action`，以及独立保存的终局观察；只有可决策步骤进入 Thought 索引。按任务类型预检至少有两条独立成功轨迹，索引行固定映射到轨迹和步号。
+每个游戏在 TextWorld 中回放一次。`reset` 得到任务描述和初始观察，逐条执行 `walkthrough` 的动作，记录「动作前的 Observation → Action → 动作后的 Observation」。只把达到 `won=True` 的轨迹纳入经验库。保存任务 ID、任务类型、任务描述、初始观察和按步排序的观察与动作。回放无需调用 Qwen，两种模型共用这批成功的原始轨迹。
 
-```text
-reset 得到 task、initial_observation
-task_demos = 同任务类型下检索 2 条完整专家轨迹
-for 每个未终止的环境步:
-    thought = LLM(task_demos, task, 当前观察, 完整当前历史)
-    hits = 同任务类型下按 thought 检索 2 个不同轨迹的步骤
-    aligned_demos = 对各命中前取 1 步、后取 2 步并标相对步号
-    reply = LLM(aligned_demos, task, 最近 3 步, 当前观察, thought, 可选动作)
-    action = 解析 <action> 标签，解析失败时用约定后缀
-    执行 action，记录环境结果与本步 Thought
-```
+### 5.2 为专家步骤生成 Thought
 
-项目适配层使用正文约定的模型、split、生成预算、可选动作提示、标签解析与官方环境评分。官方 GPT-4 脚本中的 300-token 限制、按换行停止、针对 GPT 输出的 `in/on` 字符替换和循环动作早停属于原运行外壳。项目实验沿用现有基线的动作与终止口径，检索前沿用官方对 Thought 中带空格的 ` in `、` on ` 统一为 ` in/on ` 的文本处理，并将处理后的 Thought 用于 Action 提示。
+从成功轨迹中挑少量步骤，手写 Thought 作为 few-shot 示例。对每个专家步骤，把任务描述、此前已执行的历史、该步动作前的观察及专家动作交给 Qwen，生成与该动作一致的 **Pseudo-Golden Thought**，并按轨迹 ID 和步号保存。Qwen3.5-27B 和 Qwen3.5-9B 分别生成 Thought、建立各自的经验库。
+
+使用官方 ALFWorld 的 `sentence-transformers/all-MiniLM-L6-v2` 建立两个余弦检索索引。轨迹索引用「初始观察 + 任务描述」，步骤索引只用该步 Thought。
+
+### 5.3 评测时检索与使用经验
+
+1. **每局开始检索一次轨迹，Top-K = 2。** 用当前任务的初始观察和任务描述，从同任务类型的训练经验库检索两条完整专家轨迹，作为本局生成 Thought 的示例。
+2. **每步生成当前 Thought，使用本局完整的已执行历史。** 输入两条专家轨迹、当前任务、当前观察，以及本局之前每步的 Observation、Thought 和 Action。首步无历史，第 50 步最多可见前 49 步。
+3. **用当前 Thought 检索专家步骤，Top-K = 2。** 只对当前 Thought 编码，在同任务类型的步骤索引里按余弦相似度选两个命中，每条专家轨迹最多命中一步。
+4. **扩展片段并生成 Action。** 取 **B = 1、F = 2**，也就是命中步之前 1 步、之后 2 步。每条专家示例最多 4 步，按 `[Step -1]`、`[Step 0]`、`[Step 1]`、`[Step 2]` 标记，轨迹边界处只取已有步骤。Action 提示包含两个专家片段、当前任务、当前观察、当前 Thought、可选动作，以及本局最近 **B + F = 3** 个已执行步骤，历史不足时全部保留。按项目的 `<action>…</action>` 规则解析并执行，然后进入下一步。
+
+两阶段的模型配置、动作回退、50 步上限和评分沿用第 2 节。两个示例、Thought 检索和历史对齐依据论文，具体的 B/F 与两个阶段的历史范围按官方 ALFWorld 复现实验实现。 [论文第 3 节、第 4.1 节](https://doi.org/10.1145/3626772.3657788) · [官方 ALFWorld README](https://github.com/SkyRiver-2000/TRAD-Official/tree/main/ALFWorld#readme) · [运行代码](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/run_trad.py) · [检索代码](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/thought_retrieval.py)
