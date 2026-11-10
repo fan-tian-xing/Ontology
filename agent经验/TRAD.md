@@ -6,52 +6,37 @@
 3. **每步检索相关经验。** 单独编码当前 Thought，与同任务类型的历史 Thought 计算余弦相似度，从高到低选出来自不同轨迹的 Top-K 步骤。检索结果保留轨迹 ID 和步索引，供后续按原轨迹取相邻步骤。
 4. **对齐经验并生成动作。** Temporal Expansion（TE）从每个命中步向前取 B 步、向后取 F 步，遇到边界时裁剪。Relative Order Mark（ROM）以命中步为 Step 0，标记其余步骤的相对位置。History Alignment（HA）在 Action 提示中加入当前任务最近 B+F 个已执行步骤。官方 ALFWorld 实现还把当前观察和当前 Thought 交给模型生成 Action，执行后进入下一轮。正常情况下，每个环境步需要两次生成请求。
 
-两级检索承担不同职责。轨迹级示例帮助模型理解当前进度并生成 Thought，步骤级示例帮助模型选择当前动作。当前 Thought 由模型在线生成，可能判断错误。扩展后的专家片段提供动作的前提和后续结果，帮助模型结合当前观察作出决策。详细参数列在文末。[论文 §3.1–3.3](https://openreview.net/pdf/91133b4e8ef389a01a6bb5719c9154639f083ef3.pdf#page=4) · [官方运行脚本](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/run_trad.py) · [官方检索实现](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/thought_retrieval.py)
+两级检索承担不同职责。轨迹级示例帮助模型理解当前进度并生成 Thought，步骤级示例帮助模型选择当前动作。当前 Thought 由模型在线生成，可能判断错误。扩展后的专家片段提供动作的前提和后续结果，帮助模型结合当前观察作出决策。详细参数列在文末。
 
-### 论文结果与复现范围
+### 论文结果
 
 | 基准 | 论文设置 | 任务成功率 |
 | --- | --- | --- |
 | ALFWorld | GPT-4，2 个上下文示例，134 个 OOD 任务，三次平均 | TRAD **96.77%**，Synapse 89.55%，Synapse + ReAct 93.78% |
 | Mind2Web | GPT-3.5-turbo，3 个上下文示例，汇总三个测试子集 | TRAD **2.1%**，Synapse 1.6% |
 
-TE、ROM、HA 和 B/F 的消融来自 Mind2Web。TE 在三个子集上均有帮助，ROM 和 HA 的效果随子集变化，扩展到较远的步骤也可能引入噪声。本项目以 ALFWorld 为 TRAD 的复现目标，在统一的 Qwen 设置下与 No-Exp、Self-Refine 比较。WebShop 的 TRAD 实验属于后续方法迁移。 [论文 §4.1–4.4、表 1–3](https://openreview.net/pdf/91133b4e8ef389a01a6bb5719c9154639f083ef3.pdf#page=5)
 
 ## 2. 项目统一实验设置
 
-| 项目 | 设置 |
-| --- | --- |
-| 环境 | ALFWorld 用 TextWorld PDDL 纯文字版，WebShop 用 text 模式。 |
-| 模型 | Qwen3.5-27B、Qwen3.5-9B 各自独立比较。相同模型下各方法使用同一服务配置。 |
-| 生成设置 | `temperature=0.0`、`top_p=1.0`、`enable_thinking=false`。沿用现有代码的 `max_tokens=4096` **每次生成请求**口径，TRAD 的 Thought 和 Action 各是一个请求。关闭模型思考模式时，TRAD 的 Thought 仍由普通文本生成。 |
-| 环境步数 | ALFWorld 每个 episode 最多 50 个环境动作，WebShop 最多 15 个。TRAD 的 Thought 与检索都在同一次环境动作之前完成。Self-Refine 的两轮各有自己的上限。 |
-| 动作提示 | 复用项目的 ReAct 提示词结构，包括任务、当前进度、近期历史、当前观察和 admissible actions。Action 输出采用单个 `<action>…</action>` 标签对。 |
-| 动作回退 | ALFWorld 与现有两种方法一样，标签解析失败时直接提交 `response_text[-30:].lower()`。WebShop 沿用 `response_text.lower()[-20:]`，仅当后缀可解析且环境允许时执行，否则页面保持、`reward=0`、`done=False`。合法标签内的文本仍按现有解析和环境行为处理。 |
-| 重复与评分 | 每个模型、方法、评测 split 在同一任务清单上跑三次并报告平均。ALFWorld 报官方任务成功率，WebShop 报成功率与平均奖励分数，并明确分数尺度。 |
-| 成本统计 | 逐请求保存输入、输出 token 及缺失情况。TRAD 分别汇总 Thought、Action，再合计每任务在线成本。离线标注与 Embedding 单独计账。Self-Refine 同时报两轮合计成本和第二轮成功率。 |
+| 项目    | 设置                                                                                                                                                                          |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 环境    | ALFWorld 用 TextWorld PDDL 纯文字版，WebShop 用 text 模式。                                                                                                                           |
+| 模型    | Qwen3.5-27B、Qwen3.5-9B 各自独立比较。相同模型下各方法使用同一服务配置。                                                                                                                             |
+| 生成设置  | `temperature=0.0`、`top_p=1.0`、`enable_thinking=false`。沿用现有代码的 `max_tokens=4096` **每次生成请求**口径，TRAD 的 Thought 和 Action 各是一个请求。关闭模型思考模式时，TRAD 的 Thought 仍由普通文本生成。              |
+| 环境步数  | ALFWorld 每个 episode 最多 50 个环境动作，WebShop 最多 15 个。TRAD 的 Thought 与检索都在同一次环境动作之前完成。Self-Refine 的两轮各有自己的上限。                                                                     |
+| 动作提示  | 复用项目的 ReAct 提示词结构，包括任务、当前进度、近期历史、当前观察和 admissible actions。Action 输出采用单个 `<action>…</action>` 标签对。                                                                           |
+| 动作回退  | ALFWorld 与现有两种方法一样，标签解析失败时直接提交 `response_text[-30:].lower()`。WebShop 沿用 `response_text.lower()[-20:]`，仅当后缀可解析且环境允许时执行，否则页面保持、`reward=0`、`done=False`。合法标签内的文本仍按现有解析和环境行为处理。 |
+| 重复与评分 | 每个模型、方法、评测 split 在同一任务清单上跑三次并报告平均。ALFWorld 报官方任务成功率，WebShop 报成功率与平均奖励分数，并明确分数尺度。                                                                                            |
+| 成本统计  | 逐请求保存输入、输出 token 及缺失情况。TRAD 分别汇总 Thought、Action，再合计每任务在线成本。离线标注与 Embedding 单独计账。Self-Refine 同时报两轮合计成本和第二轮成功率。                                                               |
 
 ALFWorld 在线评测沿用现有 `evaluate_dagger` 适配器，以官方 `res_points` 计分，并核对 `won`。到达步数上限的正常失败计入分母。服务或环境异常按现有重试、续跑口径处理，未完成整套任务时保留待完成状态。WebShop 的现有适配器执行官方 `baseline_models/test.py` 中的 `episode`，按满奖励判成功，报告中区分原始奖励和百分制分数。
 
 ### 数据和隔离
 
-- 服务器仓库优先用 `/data/home/liujingyao/agent_bench/alfworld`、`/data/home/liujingyao/agent_bench/WebShop`。若不可访问，使用 `/data/pretrained_models/share_project/agent_bench/` 下的对应仓库。
+- 数据采用已有的数据集。
 - ALFWorld 从 `alfworld/data/json_2.1.1/train_2000` 构库，分开评测 `valid_seen` 和 `valid_unseen`。按现有任务筛选规则要求支持的任务类型、`game.tw-pddl` 存在且 `solvable=true`。本地只读清点得到 **train_2000 有 2000 个合格游戏，seen 有 140 个，unseen 有 134 个**。合格游戏数与成功专家轨迹数分别统计。
 - WebShop 的经验池、评测清单分别使用 `WebShop/baseline_models/data/human_goals_train_2000_split.json` 和 `WebShop/baseline_models/data/human_goals_test_split.json`，商品等数据来自 `WebShop/data`。当前 TRAD 实现目标是 ALFWorld。若后续用于 WebShop，结果单列为方法迁移。
 - 两个下载仓库与数据目录按只读输入处理。轨迹、Thought、索引和运行日志写入实验输出目录。评测时只暴露任务、在线观察、动作历史和当前可选动作，walkthrough、专家计划、环境事实及评分字段仅在各自的离线构库或计分环节使用。经验库在评测前冻结，seen/unseen 的交互结果都不写回。
-
-## 3. 现有 baseline 与 TRAD 接入
-
-以下位置均相对于 `ysc_long_horizon_experience_learning/qwen3.5-27b`。
-
-| 现有实现 | 行为与接入方式 |
-| --- | --- |
-| `no_exp/alfworld` | 提示词与给定 ReAct 版本一致，单轮运行，使用真实文字环境和官方评分。`history_window=50` 可覆盖本轮已执行的历史。TRAD 可复用其任务发现、环境和评分适配、模型客户端、标签解析、后缀回退、运行日志与三次汇总。 |
-| `self_refine/alfworld` | 第一轮提示词与 No-Exp 一致。第一轮正常完成后始终从同一任务重新 reset，即使第一轮成功也跑第二轮。第二轮使用第一轮实际动作和对应观察，逐步反思并重新行动。传入轨迹不包含奖励、成功标志或原始模型输出，最终以第二轮评分。符合两轮设定。 |
-| `no_exp/webshop` | 已使用文字环境、15 步限制、20 字符回退与官方 episode 适配。在所查目录中，Self-Refine 实现位于 ALFWorld。 |
-
-建议后续将 TRAD 作为 ALFWorld 下的独立方法接入，复用现有执行外壳。新增逻辑集中在离线构库、两级检索和双阶段提示词。Thought 提示保留同一个任务和当前进度结构，补充完整专家示例，要求返回一段状态与下一步意图的 Thought。Action 提示保留原动作约束，追加当前 Thought 与带相对步号的专家片段，并使用 TRAD 的 History Alignment 窗口。
-
-TRAD 与 No-Exp 的主比较回答的是「整套方法在相同环境交互预算下是否提升成功率」。两者每步生成请求数和提示历史长度不同，解读时同时报告 token 成本。
 
 ## 4. 实施顺序与验收
 
