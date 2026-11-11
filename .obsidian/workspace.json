@@ -204,10 +204,17 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "0d748533a86c566c",
+  "active": "569003140d38e8e0",
   "lastOpenFiles": [
-    "agent经验/TRAD.md",
+    "basleline结果分析/assets/step（aime，gpqa）/step_aime_gpqa_tokens.png",
+    "basleline结果分析/assets/step（aime，gpqa）/step_aime_gpqa_accuracy.png",
+    "basleline结果分析/assets/step（aime，gpqa）/file-20261111215350877.png",
+    "basleline结果分析/assets/step（aime，gpqa）",
+    "basleline结果分析/assets",
+    "basleline结果分析/step_aime_gpqa_tokens.png",
     "basleline结果分析/step（aime，gpqa）.md",
+    "basleline结果分析/step_aime_gpqa_accuracy.png",
+    "agent经验/TRAD.md",
     "basleline结果分析/未命名.md",
     "basleline结果分析",
     "basleline结果",
@@ -239,14 +246,8 @@
     "output/playwright/final-qa/contact-sheet-3.jpg",
     "output/playwright/final-qa/contact-sheet-2.jpg",
     "output/playwright/final-qa/contact-sheet-1.jpg",
-    "output/playwright/final-qa",
-    "tmp/pdfs/make_contact_sheets.py",
     "tmp/pdfs/final-render/page-94.png",
     "tmp/pdfs/final-render/page-93.png",
-    "tmp/pdfs/final-render/page-92.png",
-    "tmp/pdfs/final-render/page-91.png",
-    "tmp/pdfs/final-render/page-90.png",
-    "tmp/pdfs/final-render/page-89.png",
     "欢迎.md"
   ]
 }
