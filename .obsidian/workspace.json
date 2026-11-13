@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "agent经验/Benchmark生成与经验评测/AgentCoMa.md",
+                "file": "agent经验/Benchmark生成与经验评测/Agentic Proposing.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "AgentCoMa"
+              "title": "Agentic Proposing"
             }
           },
           {
@@ -221,9 +221,9 @@
   },
   "active": "9e724811ff903b94",
   "lastOpenFiles": [
+    "agent经验/Benchmark生成与经验评测/AgentCoMa.md",
     "agent经验/Benchmark生成与经验评测/TRACE.md",
     "agent经验/Benchmark生成与经验评测/Agentic Proposing.md",
-    "agent经验/Benchmark生成与经验评测/AgentCoMa.md",
     "basleline结果分析/step（aime，gpqa）.md",
     "agent经验/Benchmark生成与经验评测/SkillShift-Bench.md",
     "agent经验/TRAD.md",
