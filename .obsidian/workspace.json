@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "agent经验/Benchmark生成与经验评测/TRACE.md",
+                "file": "basleline结果分析/step（aime，gpqa）.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "TRACE"
+              "title": "step（aime，gpqa）"
             }
           },
           {
@@ -221,15 +221,15 @@
   },
   "active": "9e724811ff903b94",
   "lastOpenFiles": [
+    "agent经验/Benchmark生成与经验评测/TRACE.md",
+    "agent经验/TRAD.md",
     "basleline结果分析/step（aime，gpqa）.md",
     "basleline结果分析/long_bench(alfworld).md",
     "basleline结果分析/assets/long_bench(alfworld)/alfworld_tokens.png",
     "basleline结果分析/assets/long_bench(alfworld)/alfworld_accuracy.png",
     "basleline结果分析/assets/long_bench(alfworld)",
-    "agent经验/Benchmark生成与经验评测/TRACE.md",
     "agent经验/agent经验基本情况.md",
     "agent经验/Benchmark生成与经验评测",
-    "agent经验/TRAD.md",
     "basleline结果分析/assets/step（aime，gpqa）/step_aime_gpqa_tokens.png",
     "basleline结果分析/assets/step（aime，gpqa）/step_aime_gpqa_accuracy.png",
     "basleline结果分析/assets/step（aime，gpqa）/file-20261111215350877.png",
