@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "agent经验/Benchmark生成与经验评测/AutoPlay.md",
+                "file": "agent经验/Benchmark生成与经验评测/TaskCraft.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "AutoPlay"
+              "title": "TaskCraft"
             }
           }
         ],
