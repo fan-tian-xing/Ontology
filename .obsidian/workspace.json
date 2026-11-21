@@ -205,14 +205,15 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "9e724811ff903b94",
+  "active": "569003140d38e8e0",
   "lastOpenFiles": [
+    "agent经验/TRAD.md",
+    "未命名 1.md",
     "未命名.md",
     "agent经验/Benchmark生成与经验评测/总结.md",
     "agent经验/Benchmark生成与经验评测/EvoAgentBench.md",
     "agent经验/Benchmark生成与经验评测/AutoPlay.md",
     "agent经验/Benchmark生成与经验评测/TaskCraft.md",
-    "agent经验/TRAD.md",
     "写报告的一些注意.md",
     "basleline结果分析/step（aime，gpqa）.md",
     "agent经验/Benchmark生成与经验评测/TRACE.md",
@@ -248,7 +249,6 @@
     "agent经验.md",
     "agent经验",
     "agent经验/ADAMEM.md",
-    "本体/汇报内容.md",
     "agent经验",
     "output/playwright/final-qa/contact-sheet-4.jpg",
     "output/playwright/final-qa/contact-sheet-3.jpg",
