@@ -49,9 +49,8 @@ ALFWorld 在线评测沿用现有 `evaluate_dagger` 适配器，以官方 `res_p
 
 ### 5.1 抽取专家轨迹
 
-从 `alfworld/data/json_2.1.1/train_2000` 读取每个任务的 `game.tw-pddl` 和其中的 `walkthrough`。这 2,000 个游戏都附有解题命令序列，是构库候选。
-
-每个游戏在 TextWorld 中回放一次。`reset` 得到任务描述和初始观察，逐条执行 `walkthrough` 的动作，记录「动作前的 Observation → Action → 动作后的 Observation」。只把达到 `won=True` 的轨迹纳入经验库。保存任务 ID、任务类型、任务描述、初始观察和按步排序的观察与动作。回放无需调用 Qwen，两种模型共用这批成功的原始轨迹。（每个模型下面都需要单独一个文件夹保存）
+用noexp运行一遍 `alfworld/data/json_2.1.1/train_2000`
+，记录「动作前的 Observation → Action → 动作后的 Observation」。只把达到 `won=True` 的轨迹纳入经验库。保存任务 ID、任务类型、任务描述、初始观察和按步排序的观察与动作。回放无需调用 Qwen，两种模型共用这批成功的原始轨迹。（每个模型下面都需要单独一个文件夹保存）
 
 ### 5.2 为专家步骤生成 Thought
 
