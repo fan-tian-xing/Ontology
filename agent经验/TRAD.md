@@ -62,7 +62,7 @@ ALFWorld 在线评测沿用现有 `evaluate_dagger` 适配器，以官方 `res_p
 
 1. **每局开始检索一次轨迹，Top-K = 2。** 用当前任务的初始观察和任务描述，从同任务类型的训练经验库检索两条完整专家轨迹，作为本局生成 Thought 的示例。
 2. **第一次 LLM 调用生成当前 Thought，使用本局完整的已执行历史。** 输入两条专家轨迹、当前任务、当前观察，以及本局之前每步的 Observation、Thought 和 Action。首步无历史，第 50 步最多可见前 49 步。
-3. **用当前 Thought 检索专家步骤，Top-K = 2。** 只对当前 Thought 编码，在同任务类型的整个步骤索引里按余弦相似度选两个命中，每条专家轨迹最多命中一步。候选范围覆盖该类型的全部训练轨迹。选出的两个命中按各自的轨迹步号升序排列，两个扩展片段都用于生成 Action。
+3. **用当前 Thought 检索专家步骤，Top-K = 2。** 只对当前 Thought 编码，在整个步骤索引里按余弦相似度选两个命中，每条专家轨迹最多命中一步。候选范围覆盖该类型的全部训练轨迹。选出的两个命中按各自的轨迹步号升序排列，两个扩展片段都用于生成 Action。
 4. **扩展片段，第二次 LLM 调用生成 Action。** 取 **B = 1、F = 2**，也就是命中步之前 1 步、之后 2 步。每条专家示例最多 4 步，按 `[Step -1]`、`[Step 0]`、`[Step 1]`、`[Step 2]` 标记，轨迹边界处只取已有步骤。Action 提示包含两个专家片段、当前任务、当前观察、当前 Thought、可选动作，以及本局最近 **B + F = 3** 个已执行步骤，历史不足时全部保留。按项目的 `<action>…</action>` 规则解析并执行，然后进入下一步。
 
 两阶段的模型配置、动作回退、50 步上限和评分沿用第 2 节。两个示例、Thought 检索和历史对齐依据论文，具体的 B/F 与两个阶段的历史范围按官方 ALFWorld 复现实验实现。 [论文第 3 节、第 4.1 节](https://doi.org/10.1145/3626772.3657788) · [官方 ALFWorld README](https://github.com/SkyRiver-2000/TRAD-Official/tree/main/ALFWorld#readme) · [运行代码](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/run_trad.py) · [检索代码](https://github.com/SkyRiver-2000/TRAD-Official/blob/main/ALFWorld/thought_retrieval.py)
