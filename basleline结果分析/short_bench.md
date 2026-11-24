@@ -4,7 +4,7 @@
 
 ## 1. 整体结果
 
-![](assets/step（aime，gpqa）/step_aime_gpqa_accuracy.png)
+![](file-20261124234453526.png)
 
 | 模型  | 数据集    | no-exp | Self-Refine 首轮 | 首轮 − no-exp | Self-Refine 最终 | 最终 − 首轮 |
 | --- | ------ | -----: | -------------: | ----------: | -------------: | ------: |
@@ -28,7 +28,7 @@
 
 ## 2. 27B Token 少、9B Token 多：长尾循环放大历史输入
 
-![](assets/step（aime，gpqa）/step_aime_gpqa_tokens.png)
+![](file-20261124234453517.png)
 
 下表为 **AIME24 no-exp** 的结果。Token 消耗先按每条轨迹累计，再对全部运行记录取平均。
 
