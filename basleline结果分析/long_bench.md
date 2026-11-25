@@ -130,38 +130,36 @@
 
 ### 2.4 TRAD：收益、退化与专家状态误用
 
-27B TRAD seen 相对 no-exp 提高 8.81 pp，unseen 提高 6.72 pp；9B 分别提高 6.67、1.99 pp。9B 在 unseen 的增益明显小于 Self-Refine 的 12.94 pp。任务类型表还表明，即使有经验检索，清洗/冷却/加热等操作链仍未被稳定解决。
+27B TRAD seen 相对 no-exp 提高 8.81 pp，unseen 提高 6.72 pp；9B 分别提高 6.67、1.99 pp。。
 
 #### 退化集中在哪些任务
 
-| 模型 | 任务类型 | no-exp | TRAD | 净少成功数 |
-| --- | --- | --- | --- | --- |
-| 27B | 简单搬放 | 174/177 | 172/177 | 2 |
-| 27B | 双物体放置 | 123/123 | 93/123 | 30 |
-| 9B | 灯下查看 | 77/93 | 72/93 | 5 |
-| 9B | 简单搬放 | 174/177 | 143/177 | 31 |
-| 9B | 双物体放置 | 109/123 | 67/123 | 42 |
+| 模型  | 任务类型  | no-exp  | TRAD    | 净少成功数 |
+| --- | ----- | ------- | ------- | ----- |
+| 27B | 简单搬放  | 174/177 | 172/177 | 2     |
+| 27B | 双物体放置 | 123/123 | 93/123  | 30    |
+| 9B  | 灯下查看  | 77/93   | 72/93   | 5     |
+| 9B  | 简单搬放  | 174/177 | 143/177 | 31    |
+| 9B  | 双物体放置 | 109/123 | 67/123  | 42    |
 
 这不是“难任务全降、简单任务都升”。TRAD 对27B加热的帮助很大（37→94条），却把原本全对的双物体放置降到93条。9B双物体、简单搬放和灯下查看也退化。双物体任务不仅要求找到两个物体，还要求两次真实拿取、两次运输与放置，并持续维护数量和持物状态；它尤其容易暴露 Thought、专家状态与实际执行不一致的问题。
 
-按相同测试任务记录作描述性配对：27B双物体出现30条 no-exp成功而TRAD失败，没有反向救回；9B双物体有47条成功转失败、5条失败转成功，净少42条。它们是独立方法的执行对照，不是同一条初答的修正迁移。
-
 #### 两个模型的具体案例
 
-| 模型 | 错误类型 | 任务与实际证据 | 失败解释 |
-| --- | --- | --- | --- |
-| 27B | 把准备执行或专家已执行的动作，当成当前已执行 | 两张creditcard放dresser：实际只去countertop看见卡，Thought写“下一步take”；Action却直接go dresser。随后Thought声称“creditcard 3 held”，直接move，得到Nothing happens | 当前从未执行take。检索示例中有“已拿起卡”的状态，但那不是当前事实；计划、示例状态与执行状态被混在一起 |
-| 27B | 找到对象但漏掉关键拿取 | 灯下查看laptop：到desk后先use desklamp，随后不断examine desk，没有拿起laptop，50 step失败 | 开灯不能替代持有目标物体，合法动作本身也不代表任务前提已满足 |
-| 27B | 持物/位置前提未满足，仍反复放置 | saltshaker放cabinet：反复去不同cabinet并尝试move或put，但目标没有真实拿到手 | 将目的地逐个尝试，不能修复“目标不在手中”的状态错误；这类任务使简单搬放从174降到172 |
-| 27B | 双物体完成条件没有正确维护 | 两个spraybottle放cabinet：看见物体后跳到橱柜，未真实取物就move；后续在橱柜间往返，始终没有完成两个实例的放置 | “看见两个”或“Thought写拿过”不等于实际存入两个 |
-| 27B | 无效动作、格式与循环 | 上述creditcard任务后段连续help，spraybottle任务还有推理尾部作为动作 | 失败反馈没有纠正虚假的持物记录，继续检索和生成只增加请求与Token |
-| 9B | 将专家任务的额外要求迁入当前任务 | 当前只需“把soapbar放进cart”，检索片段却是“清洗soapbar后放cart”。Action明确写“clean…as implied by the expert trajectories”，随后去sinkbasin并清洗 | 本来不需要清洗，却添加了专家的子目标；还在没有实际take的情况下声称已经拿到soapbar，目标与状态同时被带偏 |
-| 9B | 将未执行的拿取写成已持有 | candle放toilet：Thought写“take candle”，Action却直接去toilet；下一Thought称candle held，随即move并得到Nothing happens | 与27B卡片例相同，是Thought计划、Action实际动作与后续状态记忆脱节 |
-| 9B | 忽略手持容量，不能完成两个实例 | 两个glassbottle放shelf：已成功拿glassbottle 2，仍反复take glassbottle 1；可用动作中并无该take，环境持续Nothing happens，之后放回一个又尝试同时拿两个 | 没有先运输并放下第一个来释放手持容量。该错误会系统性损伤双物体任务，不只是多搜索几步 |
-| 9B | 专家物体或步骤不受当前可用动作约束 | pillow灯下查看：Thought建议先去desk，Action却在房间中央直接use desklamp；后面还尝试place pillow under desklamp这类不支持的命令 | 检索中的动作顺序或自然语言目标不能直接当作当前可执行命令 |
-| 9B | 处理动作前提仍错误 | hot cup放cabinet：把杯子放进微波炉后开关门并尝试heat，但没有维持可成功处理的持物状态；最终杯子仍在微波炉，50 step失败 | 有经验也没有稳定确认“加热成功→拿着目标→到橱柜放置”的链条 |
-| 9B | 反馈无效后重复并抹掉真实状态 | glassbottle任务反复take无效；soapbar任务还拿dishsponge、尝试用错误工具清洗，并把实际没拿到的soapbar记为held | 一次错误状态会让后续检索继续匹配错误进度，形成重复和长历史输入 |
-| 9B | 输出格式或截断 | 多条任务中出现说明文字尾部被回退为动作，或动作标签不完整 | 与语义规划错误并存；即使任务理解正确，协议失败也消耗环境step |
+| 模型  | 错误类型                   | 任务与实际证据                                                                                                                              | 失败解释                                                      |
+| --- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- |
+| 27B | 把准备执行或专家已执行的动作，当成当前已执行 | 两张creditcard放dresser：实际只去countertop看见卡，Thought写“下一步take”；Action却直接go dresser。随后Thought声称“creditcard 3 held”，直接move，得到Nothing happens | 当前从未执行take。检索示例中有“已拿起卡”的状态，但那不是当前事实；计划、示例状态与执行状态被混在一起     |
+| 27B | 找到对象但漏掉关键拿取            | 灯下查看laptop：到desk后先use desklamp，随后不断examine desk，没有拿起laptop，50 step失败                                                                 | 开灯不能替代持有目标物体，合法动作本身也不代表任务前提已满足                            |
+| 27B | 持物/位置前提未满足，仍反复放置       | saltshaker放cabinet：反复去不同cabinet并尝试move或put，但目标没有真实拿到手                                                                                | 将目的地逐个尝试，不能修复“目标不在手中”的状态错误；这类任务使简单搬放从174降到172             |
+| 27B | 双物体完成条件没有正确维护          | 两个spraybottle放cabinet：看见物体后跳到橱柜，未真实取物就move；后续在橱柜间往返，始终没有完成两个实例的放置                                                                    | “看见两个”或“Thought写拿过”不等于实际存入两个                              |
+| 27B | 无效动作、格式与循环             | 上述creditcard任务后段连续help，spraybottle任务还有推理尾部作为动作                                                                                       | 失败反馈没有纠正虚假的持物记录，继续检索和生成只增加请求与Token                        |
+| 9B  | 将专家任务的额外要求迁入当前任务       | 当前只需“把soapbar放进cart”，检索片段却是“清洗soapbar后放cart”。Action明确写“clean…as implied by the expert trajectories”，随后去sinkbasin并清洗                  | 本来不需要清洗，却添加了专家的子目标；还在没有实际take的情况下声称已经拿到soapbar，目标与状态同时被带偏 |
+| 9B  | 将未执行的拿取写成已持有           | candle放toilet：Thought写“take candle”，Action却直接去toilet；下一Thought称candle held，随即move并得到Nothing happens                                  | 与27B卡片例相同，是Thought计划、Action实际动作与后续状态记忆脱节                  |
+| 9B  | 忽略手持容量，不能完成两个实例        | 两个glassbottle放shelf：已成功拿glassbottle 2，仍反复take glassbottle 1；可用动作中并无该take，环境持续Nothing happens，之后放回一个又尝试同时拿两个                          | 没有先运输并放下第一个来释放手持容量。该错误会系统性损伤双物体任务，不只是多搜索几步                |
+| 9B  | 专家物体或步骤不受当前可用动作约束      | pillow灯下查看：Thought建议先去desk，Action却在房间中央直接use desklamp；后面还尝试place pillow under desklamp这类不支持的命令                                       | 检索中的动作顺序或自然语言目标不能直接当作当前可执行命令                              |
+| 9B  | 处理动作前提仍错误              | hot cup放cabinet：把杯子放进微波炉后开关门并尝试heat，但没有维持可成功处理的持物状态；最终杯子仍在微波炉，50 step失败                                                              | 有经验也没有稳定确认“加热成功→拿着目标→到橱柜放置”的链条                            |
+| 9B  | 反馈无效后重复并抹掉真实状态         | glassbottle任务反复take无效；soapbar任务还拿dishsponge、尝试用错误工具清洗，并把实际没拿到的soapbar记为held                                                          | 一次错误状态会让后续检索继续匹配错误进度，形成重复和长历史输入                           |
+| 9B  | 输出格式或截断                | 多条任务中出现说明文字尾部被回退为动作，或动作标签不完整                                                                                                         | 与语义规划错误并存；即使任务理解正确，协议失败也消耗环境step                          |
 
 **27B。** **专家状态误用的具体链条。** creditcard案例中，专家片段的Step 0已经拿起一张卡；当前执行在对应位置却仅看见卡。Action直接声称“I have successfully picked up creditcard 3”，并去dresser。下一次Thought又将该声称写进“Objects I have taken”，使一次未执行的take被固化成历史事实。这不是单纯“检索不相似”，而是来源与执行边界没有被保持。
 
