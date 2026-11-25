@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "basleline结果分析/short_bench.md",
+                "file": "basleline结果分析/long_bench.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "short_bench"
+              "title": "long_bench"
             }
           }
         ],
@@ -221,8 +221,8 @@
   },
   "active": "d2d7ce36b7daaf95",
   "lastOpenFiles": [
-    "basleline结果分析/long_bench.md",
     "basleline结果分析/short_bench.md",
+    "basleline结果分析/long_bench.md",
     "未命名.md",
     "未命名 1.md",
     "basleline结果分析/assets/short_bench",
