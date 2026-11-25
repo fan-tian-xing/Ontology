@@ -70,15 +70,13 @@ ALFWorld 的 no-exp 失败在现有终止记录中均表现为达到 50 步上�
 
 ### 2.3 结合轨迹的原因分析
 
-| 可观察机制 | 原始案例 | 关键证据与解释 |
+| 可观察机制 | 模型与案例任务 | 主要过程及解释 |
 | --- | --- | --- |
-| 不维持目标与物体状态 | 9B / no-exp / seen / run_01 / `trial_T20190909_150719_492274`，灯下查看 bowl | 已发现 bowl 和 desklamp，仍在桌、抽屉、架子间往返；后段尝试拿走 desklamp，并出现 `Nothing happens.`。任务所需的是拿 bowl 到灯旁使用灯，不是反复搬动灯具，最终 50 步未成功 |
-| 搜索改写没有及时转化为有效购买 | 27B / no-exp / WebShop / run_01 / `test_0003` | 为“无麸质、素食、烟熏胡椒培根、4 oz×2、低于40美元”反复改写搜索、翻页和返回，15 步仍停在结果页，得分 0。说明搜索活动本身不等于完成多约束匹配 |
-| 找到近似商品但属性不全 | 9B / no-exp / WebShop / run_01 / `test_0003` | 买入 3 oz×4 的 vegan jerky，得到 50 分，但任务要求 4 oz×2；有部分语义匹配而未满足所有条件 |
-| 对象/需求匹配不可靠 | 27B 与 9B / no-exp / WebShop / run_01 / `test_0002` | 60 capsules 瓶装无硫酸盐、无防腐剂护发需求中，两者购买后仅 2.5 分；标签与购买状态能确认未满足目标，但不能单凭分数指定所有缺失属性 |
+| 不维持目标与物体状态 | 9B / no-exp / seen，灯下查看碗（bowl） | 已发现 bowl 和 desklamp，仍在桌、抽屉、架子间往返；后段尝试拿走 desklamp，并出现 `Nothing happens.`。任务所需的是拿 bowl 到灯旁使用灯，不是反复搬动灯具，最终 50 步未成功 |
+| 搜索改写没有及时转化为有效购买 | 27B / no-exp / WebShop | 为“无麸质、素食、烟熏胡椒培根、4 oz×2、低于40美元”反复改写搜索、翻页和返回，15 步仍停在结果页，得分 0。说明搜索活动本身不等于完成多约束匹配 |
+| 找到近似商品但属性不全 | 9B / no-exp / WebShop | 买入 3 oz×4 的 vegan jerky，得到 50 分，但任务要求 4 oz×2；有部分语义匹配而未满足所有条件 |
+| 对象/需求匹配不可靠 | 27B 与 9B / no-exp / WebShop | 60 capsules 瓶装无硫酸盐、无防腐剂护发需求中，两者购买后仅 2.5 分；标签与购买状态能确认未满足目标，但不能单凭分数指定所有缺失属性 |
 | 输出不成动作与环境前提不满足会叠加 | 上述 ALFWorld 轨迹中有被回退成回复尾部文本的动作；多步任务中也有未到目标位置就放置物品 | 需区分模型格式失败、动作字符串匹配失败与真实任务规划失败；并非每个 `Nothing happens.` 都来自同一种原因 |
-
-案例：[bowl 执行日志](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_long_horizon_experience_learning/ysc_long_horizon_experience_learning/qwen3.5-9b/no_exp/alfworld/outputs/alfworld_seen/run_01/episodes/0002_trial_T20190909_150719_492274/stages.jsonl>)；[搜索耗尽日志](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_long_horizon_experience_learning/ysc_long_horizon_experience_learning/qwen3.5-27b/no_exp/webshop/outputs/run_01/episodes/0003/stages.jsonl>)；[购物得分记录](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_long_horizon_experience_learning/ysc_long_horizon_experience_learning/qwen3.5-9b/no_exp/webshop/outputs/run_01/samples.jsonl>)。
 
 这些是经过原始轨迹核查的例子，不是全体失败的人工原因分类。动作格式错误、无效动作与步数耗尽可能同时出现在同一任务，不能将它们直接相加作为互斥失败比例。
 
@@ -128,15 +126,13 @@ WebShop 的成功保留更脆弱：27B 丢失 7/426（1.64%）的首轮成功，
 
 ### 3.4 反思成功与退化的真实案例
 
-**案例一：利用首轮发现的位置，大幅缩短第二轮。** 9B / seen / run_01 / CD 灯下查看任务 `trial_T20190907_154618_526741`。首轮在 book、pen 等对象上分散注意力，最后已看到 shelf 3 上的 cd 1，却耗尽 50 步。第二轮直接执行 `go to shelf 3 → take cd 1 from shelf 3 → go to sidetable 2 → use desklamp 1`，4 步成功。有效收益在于复用已发现的环境事实，并重新对准 CD 这个目标，而不只是生成更长的反思文字。
+**案例一：利用首轮发现的位置，大幅缩短第二轮。** 9B / seen / 要求把光盘拿到台灯旁查看的任务。首轮在 book、pen 等对象上分散注意力，最后已看到 shelf 3 上的 cd 1，却耗尽 50 步。第二轮直接执行 `go to shelf 3 → take cd 1 from shelf 3 → go to sidetable 2 → use desklamp 1`，4 步成功。有效收益在于复用已发现的环境事实，并重新对准 CD 这个目标，而不只是生成更长的反思文字。
 
-**案例二：修复目标对象与动作前提。** 9B / unseen / run_01 / 清洗 plate 任务 `trial_T20190908_213533_897289`。首轮先拿错 bowl，清洗后还没到 countertop 就尝试放置；后段虽找到 plate，最终放置仍得到 `Nothing happens.`。第二轮拿 cabinet 3 的 plate，去 sinkbasin 清洗，先走到 countertop 1 再放置，6 步成功。
+**案例二：修复目标对象与动作前提。** 9B / unseen / 要求清洗盘子（plate）并放到台面的任务。首轮先拿错 bowl，清洗后还没到 countertop 就尝试放置；后段虽找到 plate，最终放置仍得到 `Nothing happens.`。第二轮拿 cabinet 3 的 plate，去 sinkbasin 清洗，先走到 countertop 1 再放置，6 步成功。
 
-**案例三：省略选项选择，把满分改成部分分。** 9B / WebShop / run_03 / `test_0465`，要求灰色、记忆棉、露趾拖鞋。首轮对商品 `B09JFDGWC8` 选择 `b-gray` 后购买，100 分；第二轮复用搜索与商品，但直接 `click[buy now]`，没有选颜色，降为 75 分，成功变失败。它减少了步骤（9→3），同时省掉了必要条件。
+**案例三：省略选项选择，把满分改成部分分。** 9B / WebShop，要求灰色、记忆棉、露趾拖鞋。首轮对商品 `B09JFDGWC8` 选择 `b-gray` 后购买，100 分；第二轮复用搜索与商品，但直接 `click[buy now]`，没有选颜色，降为 75 分，成功变失败。它减少了步骤（9→3），同时省掉了必要条件。
 
-**案例四：动作字符串变化也能使成功退化。** 27B / WebShop / run_01 / `test_0297`，0.17 fl oz 香水。首轮选择页面选项 `0.17 fl oz  |  5ml` 后满分；第二轮把点击文本写成 `0.17 fl oz | 5ml`，最终只得到 66.67 分。日志支持其没有保持同样的选项操作；该类接口操作问题不能被笼统归为缺乏商品知识。
-
-原始日志：[CD 第二轮](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_long_horizon_experience_learning/ysc_long_horizon_experience_learning/qwen3.5-9b/self_refine/alfworld/outputs/alfworld_seen/run_01/episodes/0005_trial_T20190907_154618_526741/refine_stages.jsonl>)；[plate 第二轮](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_long_horizon_experience_learning/ysc_long_horizon_experience_learning/qwen3.5-9b/self_refine/alfworld/outputs/alfworld_unseen/run_01/episodes/0064_trial_T20190908_213533_897289/refine_stages.jsonl>)；[拖鞋退化](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_long_horizon_experience_learning/ysc_long_horizon_experience_learning/qwen3.5-9b/self_refine/webshop/outputs/run_03/episodes/0465/refine_stages.jsonl>)；[香水退化](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_long_horizon_experience_learning/ysc_long_horizon_experience_learning/qwen3.5-27b/self_refine/webshop/outputs/run_01/episodes/0297/refine_stages.jsonl>)。
+**案例四：动作字符串变化也能使成功退化。** 27B / WebShop，0.17 fl oz 香水。首轮选择页面选项 `0.17 fl oz  |  5ml` 后满分；第二轮把点击文本写成 `0.17 fl oz | 5ml`，最终只得到 66.67 分。日志支持其没有保持同样的选项操作；该类接口操作问题不能被笼统归为缺乏商品知识。
 
 ### 3.5 第二轮更省动作，不代表总成本更低
 
@@ -160,19 +156,15 @@ WebShop 上，27B TRAD 主要提高部分得分，而非满分；9B TRAD 虽比 
 
 ### 4.2 正例：把操作经验落回当前观察
 
-9B / seen / run_01 / `trial_T20190909_150719_492274`，正是 no-exp 失败的 bowl 灯下查看任务。TRAD 的日志虽然也有两次无效开抽屉，但随后发现 dresser 1 的灯，回 desk 1 拿 bowl，再到 dresser 1 使用 desklamp，11 步成功。其成功动作与当时环境中的 bowl、灯和位置一致，显示经验能够帮助组织“持物到灯旁使用灯”的链条。
+9B / seen，正是 no-exp 失败的 bowl 灯下查看任务。TRAD 的日志虽然也有两次无效开抽屉，但随后发现 dresser 1 的灯，回 desk 1 拿 bowl，再到 dresser 1 使用 desklamp，11 步成功。其成功动作与当时环境中的 bowl、灯和位置一致，显示经验能够帮助组织“持物到灯旁使用灯”的链条。
 
-这是同任务编号的描述性对照；不同方法是独立生成过程，不能据此断定唯一改变的因素或把单条轨迹当成总体因果证明。
-
-[TRAD bowl 日志](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_long_horizon_experience_learning/ysc_long_horizon_experience_learning/qwen3.5-9b/trad/alfworld/outputs/alfworld_seen/run_01/episodes/0002_trial_T20190909_150719_492274/stages.jsonl>)。
+这是同一测试任务的描述性对照；不同方法是独立生成过程，不能据此断定唯一改变的因素或把单条轨迹当成总体因果证明。
 
 ### 4.3 反例：知道工具和目标，仍卡在状态循环
 
-9B / TRAD / unseen / run_01 / `trial_T20190907_083346_800823`，要求把热 cup 放进 cabinet。轨迹拿到 cup 2 后去 microwave，却把杯子放进微波炉、反复开关门，期间调用 `heat cup 2 with microwave 1`，随后再次陷入开关门循环；50 步结束时杯子仍在微波炉里，没有完成到 cabinet 的最终转移。相同任务编号下 no-exp 的该次运行用了 43 步并成功。
+9B / TRAD / unseen，要求加热杯子（cup），再放进橱柜（cabinet）。轨迹拿到 cup 2 后去 microwave，却把杯子放进微波炉、反复开关门，期间调用 `heat cup 2 with microwave 1`，随后再次陷入开关门循环；50 步结束时杯子仍在微波炉里，没有完成到 cabinet 的最终转移。同一测试任务下 no-exp 的该次运行用了 43 步并成功。
 
 这条记录支持“动作前提、当前持物状态与完成条件没有被持续跟踪”这一解释；并不能证明所有加热失败都是相同原因，也不能仅因为检索存在就断言失败全部由检索造成。
-
-[cup 结果定位：上述 task_id](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_long_horizon_experience_learning/ysc_long_horizon_experience_learning/qwen3.5-9b/trad/alfworld/outputs/alfworld_unseen/run_01/samples.jsonl>)。
 
 ### 4.4 经验覆盖量与使用能力应分开看
 
@@ -261,10 +253,9 @@ seen 每次分母 140，unseen 每次分母 134，WebShop 每次分母 500。
 | 9B | ALFWorld unseen | 71 → 89 | 71 → 87 | 71 → 88 |
 | 9B | WebShop | 75 → 90 | 70 → 79 | 72 → 83 |
 
-## 数据来源与核对规则
+## 统计口径
 
-- 结果根目录：`D:\经验（利用）\第一次复现\ysc_experience_learning\results\ysc_long_horizon_experience_learning\ysc_long_horizon_experience_learning`。
-- 汇总来源：`qwen3.5-{27b,9b}/{no_exp,self_refine,trad}/{alfworld,webshop}/outputs/.../summary_3runs.json`；任务状态、两轮迁移、分数与 Token 从 `run_*/samples.jsonl` 复算。
-- Self-Refine 使用 `initial_round`、`refine_round` 配对；具体动作、观察及选项选择使用 `episodes/*/{initial_stages,refine_stages,stages}.jsonl` 核查。计分为第二轮，成本为两轮累计。
-- 百分比从原始计数计算后四舍五入；病例中的失败是执行结果，不是 API 请求失败。Token 只统计成功返回请求，建库与在线执行分别列示。
-- 两张已有图均经数值核对后保留，并在图注标明只对应 27B；引用使用 `assets/long_bench/` 下的实际路径。本次没有新增或删除图片文件。
+- 任务状态、成功率、分数、两轮迁移及 Token 均由原始运行记录复算；案例正文直接描述任务要求、关键动作与结果。
+- Self-Refine 按同一任务的首轮、第二轮配对统计；最终表现按第二轮计分，成本为两轮累计。
+- 百分比从原始计数计算后四舍五入。案例中的失败是执行结果，不等同于 API 请求失败。
+- Token 只统计成功返回请求，在线执行与一次性建库分别列示。

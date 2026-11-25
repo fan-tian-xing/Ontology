@@ -83,14 +83,12 @@ AIME 每年 30 题 × 5 次＝150 条作答；GPQA-Diamond 为 198 题 × 3 次�
 
 ### 2.2 错误机制与原始案例
 
-| 机制 | 案例位置 | 日志证据 | 可以支持的解释 |
+| 机制 | 模型与任务 | 题目主要内容及结果 | 可以支持的解释 |
 | --- | --- | --- | --- |
-| 未验证的组合计数假设 | 27B / no-exp / AIME24 / run_01 / ID 62 | 正八边形染色题把蓝点为 4 时的有效集合数算为 46，得到 139/256、答案 395；标准答案为 371。枚举 256 种染色可得有效集合 115 个，其中 4 蓝点仅 22 个 | “Known result”式断言没有被实际分类或枚举验证，重复确认算术不能修复组合结构错误 |
-| 分段交点计数的充分性没有验证 | 27B / no-exp / AIME24 / run_01 / ID 63 | 用 16×24＝384 作为交点总数，并以各段覆盖值域推断每段组合恰有一交点；数据集答案为 385 | 错在分段计数论证及特殊情况处理，不能只检查乘法是否正确；本例不据此断言缺失交点的精确位置 |
-| 已算出答案但不结束 | 9B / no-exp / AIME24 / run_05 / ID 69 | 彩票条件概率已反复得到 1/115 与 116，却始终没有最终 boxed；73 次调用、输入 646,927、输出 16,384，最终无答案 | 数学结果与可提交结果脱节，重复续写放大成本 |
-| 与数据集答案不符的论证被坚持 | 9B / no-exp / GPQA / run_01 / ID 16 | 分子对接准备题选 D，数据集标签为 C；回答持续论证 D 的合理性 | 该样本说明答案层面的错误与立场固化，不凭这一条对有争议的领域论断作外部裁决 |
-
-原始样本：[27B 数学案例](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_step_experience_learning/ysc_step_experience_learning/qwen3.5-27b/no_exp/aime/outputs/aime24/run_01/samples.jsonl>)；[9B 结束失败](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_step_experience_learning/ysc_step_experience_learning/qwen3.5-9b/no_exp/aime/outputs/aime24/run_05/samples.jsonl>)；[9B GPQA 案例](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_step_experience_learning/ysc_step_experience_learning/qwen3.5-9b/no_exp/gpqa/outputs/diamond/run_01/samples.jsonl>)。
+| 未验证的组合计数假设 | 27B / no-exp / AIME24 | 题目将正八边形各顶点独立染红或蓝，要求计算某次旋转能使所有蓝点落到原红点位置的概率，并求最简分数分子、分母之和。模型把蓝点为 4 时的有效集合数算为 46，得到 139/256、答案 395；标准答案为 371。枚举 256 种染色可得有效集合 115 个，其中 4 蓝点仅 22 个 | “Known result”式断言没有被实际分类或枚举验证，重复确认算术不能修复组合结构错误 |
+| 分段交点计数的充分性没有验证 | 27B / no-exp / AIME24 | 题目要求两条由绝对值与正弦、余弦复合而成的曲线的交点数。模型用 16×24＝384 作为交点总数，并以各段覆盖值域推断每段组合恰有一交点；数据集答案为 385 | 错在分段计数论证及特殊情况处理，不能只检查乘法是否正确；本例不据此断言缺失交点的精确位置 |
+| 已算出答案但不结束 | 9B / no-exp / AIME24 | 题目从 10 个数中选 4 个，至少命中 2 个可获奖，要求已获奖条件下全中 4 个的概率，并求最简分数分子、分母之和。模型已反复得到 1/115 与 116，却始终没有最终 boxed；73 次调用、输入 646,927、输出 16,384，最终无答案 | 数学结果与可提交结果脱节，重复续写放大成本 |
+| 与数据集答案不符的论证被坚持 | 9B / no-exp / GPQA | 题目问具有多个手性中心和互变异构形式的分子在对接前应优先做什么。模型选 D（分析并排序不同形式），标签为 C（结合初步体外实验验证）；回答持续论证 D 的合理性 | 该样本说明答案层面的错误与立场固化，不凭这一条对有争议的领域论断作外部裁决 |
 
 上述是人工核查过的机制案例，并不是对全部错误进行互斥人工标注后的原因占比。日志也没有统一“第一处错误步骤”标签，不能据此编造首错步统计。
 
@@ -174,18 +172,19 @@ AIME 每年 30 题 × 5 次＝150 条作答；GPQA-Diamond 为 198 题 × 3 次�
 | 4B | GPQA | 6 | 修正完成但答案改错 5；修正预算耗尽 1 |
 这区分了两个改进目标：一是提高审查内容的可靠性；二是让审查或修正的完成失败不自动抹掉一个已有正确答案。这里仅讨论结果所揭示的机制，没有修改实验结果或回填答案。
 
-### 3.5 可追溯的修正与误改案例
+### 3.5 修正与误改案例
 
-| 情况 | 位置 | 初答、反馈与最终结果 |
-| --- | --- | --- |
-| 换建模方式后救回 | 27B / AIME25 / run_01 / ID 2 | 初答用错误面积拼接得到 432；反馈指出七边形区域分解不成立；修正改用按顶点顺序的向量叉积求面积，得到正确的 588 |
-| 补回遗漏情况 | 9B / AIME26 / run_01 / ID 2 | 数位和为 13 的无零回文数题，初答把 7 位情况误套成偶数长度结构，得到 42；反馈补回该类 20 个，最终 62 |
-| 修复边界漏计 | 4B / AIME26 / run_01 / ID 4 | 初答在 n+1≤101 的区间漏掉质数 101，得到 71；反馈补计后得到正确的 70 |
-| 检查指出推理问题，但改坏答案 | 9B / AIME25 / run_02 / ID 15 | 初答 735 与标签一致；反馈确实指出立方剩余计数中有问题，但重算又发生错误，最终改为 245。答案匹配与推理无缺陷不是同一件事 |
-| 反馈结束失败 | 9B / AIME24 / run_01 / ID 73 | 初答 197 正确；反馈耗尽 16,384 输出 Token，未形成有效 Verdict，最终没有答案 |
-| 自评重复初始立场 | 9B / GPQA / run_01 / ID 16 | 初答 D、标签 C；反馈给出 CORRECT，因而直接保留 D，未触发修正 |
+**案例一：修复几何建模错误（27B，AIME25）。** 题目在三角形两边设置分点，并通过关于分点的反射构造七边形；已知内部四边形面积为 288，要求七边形面积。初答把几个三角形与四边形的面积作了错误拼接，得到 432。反馈指出区域分解不成立；修正改用按顶点顺序求向量叉积，发现若干有向面积相互抵消，得到正确答案 **588**。收益来自重新建立面积关系，而不是重复检查原来的加减法。
 
-案例原始样本：[面积修正](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_step_experience_learning/ysc_step_experience_learning/qwen3.5-27b/self_refine/aime/outputs/aime25/run_01/samples.jsonl>)；[回文数修正](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_step_experience_learning/ysc_step_experience_learning/qwen3.5-9b/self_refine/aime/outputs/aime26/run_01/samples.jsonl>)；[边界修正](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_step_experience_learning/ysc_step_experience_learning/qwen3.5-4b/self_refine/aime/outputs/aime26/run_01/samples.jsonl>)；[误改735](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_step_experience_learning/ysc_step_experience_learning/qwen3.5-9b/self_refine/aime/outputs/aime25/run_02/samples.jsonl>)；[反馈失败](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_step_experience_learning/ysc_step_experience_learning/qwen3.5-9b/self_refine/aime/outputs/aime24/run_01/samples.jsonl>)；[错误保留](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_step_experience_learning/ysc_step_experience_learning/qwen3.5-9b/self_refine/gpqa/outputs/diamond/run_01/samples.jsonl>)。
+**案例二：补回被遗漏的分类（9B，AIME26）。** 题目要求统计十进制表示中不含 0、各位数字之和为 13 的正整数回文数。初答按位数分类，但把 7 位回文数误套成偶数长度的结构，漏掉这一类的 20 个数，只得到 42。反馈定位到遗漏，修正补回 7 位情况，最终得到正确答案 **62**。
+
+**案例三：修复区间边界漏计（4B，AIME26）。** 题目要求统计不超过 100、能写成不同正整数 a、b 的 `a+b+ab` 的整数个数。模型将条件转化为 `n+1=(a+1)(b+1)`，需要在不超过 101 的范围内排除质数和质数平方。初答漏掉边界上的质数 101，得到 71；反馈要求补计，最终得到正确答案 **70**。这说明审查对明确的边界遗漏可以有效。
+
+**案例四：指出推理问题，却把正确答案改错（9B，AIME25）。** 题目要求统计满足 `1≤a,b,c≤3⁶`、`a³+b³+c³` 为 `3⁷` 倍数的有序三元组数量 N，再求 N 除以 1000 的余数。初答给出 **735**，与标准答案一致。反馈指出其中立方剩余的计数有问题，触发重算；修正又在分类计数中出错，最终改成 **245**。因此，“初答答案正确”与“初答推理毫无缺陷”应分开，而发现一处问题也不保证重新求解的答案更可靠。
+
+**案例五：审查没有结束，丢失正确初答（9B，AIME24）。** 题目给出在同一三角形内按相同方式排列的两组相切圆：一组为 8 个半径 34 的圆，另一组为 2024 个半径 1 的圆，要求三角形内切圆半径写成最简分数后分子与分母之和。初答已得到正确的 **197**。反馈却反复讨论几何关系，耗尽 16,384 个输出 Token 后仍没有有效 Verdict，最终未保留初答，记为无答案。这里的损失来自审查完成失败，而不是新的数值答案错误。
+
+**案例六：自评延续初始判断，没有发现标签层面的错误（9B，GPQA）。** 题目讨论一个含多个手性中心、存在不同互变异构形式的分子，问开展分子对接前最关键的准备步骤。初答选择 D，即分析不同手性和互变异构形式并按理化性质排序；数据集标签为 C，即将计算预测与初步体外结合实验结合验证。反馈继续认可初答并给出 CORRECT，最终直接保留 D。这个例子说明，自评可能重复支持原来的论证，不能把“模型认为说得通”直接当成答案已经通过验证。
 
 ## 4. TRAD：为什么短程收益不稳定，4B 尤其低？
 
@@ -205,21 +204,17 @@ AIME 每年 30 题 × 5 次＝150 条作答；GPQA-Diamond 为 198 题 × 3 次�
 
 ### 4.2 案例 A：把检索案例的中间状态当成当前状态
 
-**4B / TRAD / AIME24 / run_01 / ID 72。** 当前题要求在 |z|＝4 时最大化 `(75+117i)z+(96+144i)/z` 的实部，标准答案为 540。但检索命中了训练题 `2014-I-14`：求某有理方程最大实根，并写成 `a+√(b+√c)` 后求 a+b+c。首次 Thought 直接声称“已令 y=x−11，剩余根满足 y⁴−104y²+2504＝0”，接着 Action 求出 263；这些状态来自另一道训练题，并非当前题推导所得。
+**4B / TRAD / AIME24。** 当前题要求在 |z|＝4 时最大化 `(75+117i)z+(96+144i)/z` 的实部，标准答案为 540。但检索命中了一道训练示例：求某有理方程最大实根，并写成 `a+√(b+√c)` 后求 a+b+c。首次 Thought 直接声称“已令 y=x−11，剩余根满足 y⁴−104y²+2504＝0”，接着 Action 求出 263；这些状态来自另一道训练题，并非当前题推导所得。
 
-更关键的是，第一次步骤检索对这段偏离当前题的 Thought 给出了与 `2014-I-14` 的近乎 1.0 相似度。日志展示了一个可观察的链条：**初始状态被示例带偏 → 步骤检索继续匹配错误状态 → 后续 Action 围绕错误任务重复**。最终 151 次调用、累计输入 4,260,839、输出 16,384，没有最终答案。
+更关键的是，第一次步骤检索对这段偏离当前题的 Thought 给出了与该训练示例近乎 1.0 的相似度。日志展示了一个可观察的链条：**初始状态被示例带偏 → 步骤检索继续匹配错误状态 → 后续 Action 围绕错误任务重复**。最终 151 次调用、累计输入 4,260,839、输出 16,384，没有最终答案。
 
 这不是仅凭分数猜测“模型被干扰”，而是当前题、检索命中、Thought 与 Action 的内容都能相互核对。不过，单例只能证明该机制确实出现，不能给出其在全部错误中的占比。
 
-[检索日志](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_step_experience_learning/ysc_step_experience_learning/qwen3.5-4b/trad/aime/outputs/aime24/run_01/retrievals.jsonl>)；[Thought / Action 日志](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_step_experience_learning/ysc_step_experience_learning/qwen3.5-4b/trad/aime/outputs/aime24/run_01/stages.jsonl>)。
-
 ### 4.3 案例 B：算对之后继续重复，没有形成提交答案
 
-**4B / TRAD / AIME25 / run_01 / ID 17。** 题目要求 n+2 整除 `3(n+3)(n²+9)`。首次 Action 已推出 n+2 整除 39，n 为 1、11、37，和为 **49（正确）**；但之后反复重新描述“下一步求和”，没有输出最终 boxed。最终 188 次调用、累计输入 3,027,514、输出 16,384，仍无答案。
+**4B / TRAD / AIME25。** 题目要求求出所有满足 n+2 整除 `3(n+3)(n²+9)` 的正整数 n，并计算它们的和。首次 Action 已推出 n+2 整除 39，n 为 1、11、37，和为 **49（正确）**；但之后反复重新描述“下一步求和”，没有输出最终 boxed。最终 188 次调用、累计输入 3,027,514、输出 16,384，仍无答案。
 
-**4B / TRAD / GPQA / run_01 / ID 122** 也反复写出滴定题选项 A 对应的 pH 为 4.26、8.52，却没有规范提交选项；151 次调用、输入 1,985,491、输出 16,384 后失败。该回答的中间物质的量还存在不一致，因此这里仅确认“后期结论与标签一致却未提交”，不把整条推理视为完全正确。
-
-[AIME25 ID 17](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_step_experience_learning/ysc_step_experience_learning/qwen3.5-4b/trad/aime/outputs/aime25/run_01/samples.jsonl>)；[GPQA ID 122](<file:///D:/%E7%BB%8F%E9%AA%8C%EF%BC%88%E5%88%A9%E7%94%A8%EF%BC%89/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%A4%8D%E7%8E%B0/ysc_experience_learning/results/ysc_step_experience_learning/ysc_step_experience_learning/qwen3.5-4b/trad/gpqa/outputs/diamond/run_01/samples.jsonl>)。
+**4B / TRAD / GPQA** 的题目是将 20 mL、0.05 M 醋酸用等体积水稀释，再用 0.1 M NaOH 滴定，求滴定至 25% 与等当点的 pH。模型反复写出选项 A 对应的 pH 为 4.26、8.52，却没有规范提交选项；151 次调用、输入 1,985,491、输出 16,384 后失败。该回答的中间物质的量还存在不一致，因此这里仅确认“后期结论与标签一致却未提交”，不把整条推理视为完全正确。
 
 ### 4.4 检索量相同，不等于能正确利用经验
 
@@ -322,10 +317,9 @@ AIME 每次分母 30；GPQA 每次分母 198。下面的 run 是独立完整运�
 | 4B | AIME26 | 14 → 18 | 13 → 17 | 11 → 15 | 12 → 14 | 13 → 15 |
 | 4B | GPQA-Diamond | 130 → 134 | 129 → 132 | 133 → 139 | — | — |
 
-## 数据来源与核对规则
+## 统计口径
 
-- 结果根目录：`D:\经验（利用）\第一次复现\ysc_experience_learning\results\ysc_step_experience_learning\ysc_step_experience_learning`。
-- 汇总值来源：`qwen3.5-{27b,9b,4b}/{no_exp,self_refine,trad}/{aime,gpqa}/outputs/.../summary_*runs.json`；准确率、各阶段 Token、状态和迁移数从 `run_*/samples.jsonl` 复算。
-- 自评核查字段：`initial_is_correct`、`feedback_judgment`、`is_correct`、`pipeline_status`、`refinement_status`；TRAD 案例另核对 `retrievals.jsonl`、`stages.jsonl` 与经验库原题。
-- 所有百分比由未四舍五入的计数计算后显示两位小数；例如 4B TRAD AIME25 是 16.67%，其 best@5 为 23.33%。表间直接相减已显示值可能有 0.01 pp 差异。
-- 原文中可核实的首轮表、长尾解释和案例已保留并更新；两张原图经核对后保留，引用修正为 `assets/short_bench/` 下的实际路径。本次没有新增或删除图片文件。
+- 结果汇总、正确与错误迁移、状态及 Token 均由原始运行记录复算；案例根据题目、回答、反馈、检索内容与最终结果核查，正文已直接说明主要内容。
+- 自评正确性以初答是否匹配数据集答案为核查标准，不等同于逐步证明推理完全正确。
+- 所有百分比由原始计数计算后显示两位小数；表间直接相减已显示值可能有 0.01 pp 差异。
+- Token 只统计成功返回请求，在线执行与一次性建库分别列示。
