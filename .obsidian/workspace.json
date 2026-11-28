@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "个人体会.md",
+                "file": "未命名.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "个人体会"
+              "title": "未命名"
             }
           }
         ],
@@ -233,10 +233,11 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e183921d4b7d413c",
+  "active": "569003140d38e8e0",
   "lastOpenFiles": [
-    "未命名.md",
+    "审稿",
     "写报告的一些注意.md",
+    "未命名.md",
     "个人体会.md",
     "agent经验/Benchmark生成与经验评测/TRACE.md",
     "agent经验/Benchmark生成与经验评测/TaskCraft.md",
